@@ -2,7 +2,6 @@ import AccessAlarmIcon from '@mui/icons-material/AccessAlarm'
 import Button from '@mui/material/Button'
 
 function App() {
-
   return (
     <>
       <div>DoCongThanhPhuong</div>
