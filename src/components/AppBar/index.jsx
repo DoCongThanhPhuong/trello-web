@@ -36,7 +36,10 @@ function AppBar() {
         paddingX: 2,
         overflowX: 'auto',
         bgcolor: (theme) =>
-          theme.palette.mode === 'dark' ? '#2c3e50' : '#2e2ed4'
+          theme.palette.mode === 'dark' ? '#2c3e50' : '#2e2ed4',
+        '&::-webkit-scrollbar-track': {
+          m: 2
+        }
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
