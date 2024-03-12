@@ -19,7 +19,8 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
+import { generatePlaceholderCard } from '~/utils/formatters'
 
 import Column from './ListColumns/Column/Column'
 import Card from './ListColumns/Column/ListCards/Card/Card'
@@ -34,7 +35,7 @@ function BoardContent({ board }) {
   //   activationConstraint: { distance: 10 }
   // })
 
-  // Yêu cầu chuột di chuyển 10 pixel thì mới kích hoạt event, sửa trường hợp click gọi event
+  // Yêu cầu chuột di chuyển 10px thì mới kích hoạt event, sửa trường hợp click gọi event
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: { distance: 10 }
   })
@@ -50,7 +51,7 @@ function BoardContent({ board }) {
 
   const [orderedColumns, setOrderedColumns] = useState([])
 
-  // Cùng một thời điểm chỉ có 1 phần tử(card hoặc column) được kéo
+  // Cùng một thời điểm chỉ có 1 phần tử (card hoặc column) được kéo
   const [activeDragItemId, setActiveDragItemId] = useState([null])
   const [activeDragItemType, setActiveDragItemType] = useState([null])
   const [activeDragItemData, setActiveDragItemData] = useState([null])
@@ -83,7 +84,7 @@ function BoardContent({ board }) {
   ) => {
     setOrderedColumns((prevColumns) => {
       const overCardIndex = overColumn?.cards?.findIndex(
-        // Tìm vị trí(index) của overCard trong column đích(nơi activeCard sắp được thả)
+        // Tìm vị trí (index) của overCard trong column đích (nơi activeCard sắp được thả)
         (card) => card._id === overCardId
       )
 
@@ -115,6 +116,11 @@ function BoardContent({ board }) {
           (card) => card._id !== activeDraggingCardId
         )
 
+        // Thêm Placeholder Card nếu Column rỗng (bị kéo hết card bên trong)
+        if (isEmpty(nextActiveColumn.cards)) {
+          nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)]
+        }
+
         // Cập nhật lại mảng cardOrderIds cho chuẩn theo dữ liệu mới
         nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(
           (card) => card._id
@@ -139,6 +145,11 @@ function BoardContent({ board }) {
           newCardIndex,
           0,
           rebuild_activeDraggingCardData
+        )
+
+        // Xóa Placeholder Card đi nếu nó đang tồn tại
+        nextOverColumn.cards = nextOverColumn.cards.filter(
+          (card) => !card.FE_PlaceholderCard
         )
 
         // Cập nhật lại mảng cardOrderIds cho chuẩn theo dữ liệu mới
@@ -194,7 +205,7 @@ function BoardContent({ board }) {
     // Nếu không tồn tại 1 trong 2 column thì không làm gì hết, tránh crash trang
     if (!activeColumn || !overColumn) return
 
-    // Kiểm tra 2 column khác nhau thì xử lý logic còn nếu cùng trong 1 column thì không làm gì
+    // Kiểm tra nếu kéo thả giữa 2 column khác nhau thì xử lý logic còn nếu cùng trong 1 column thì không làm gì
     // Đây là xử lý khi đang kéo sang
     if (activeColumn._id !== overColumn._id) {
       moveCardBetweenDifferentColumns(
@@ -301,6 +312,7 @@ function BoardContent({ board }) {
           oldColumnIndex,
           newColumnIndex
         )
+
         // 2 console.log dữ liệu này dùng để xử lý gọi API
         // const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id)
         // console.log(dndOrderedColumns)
