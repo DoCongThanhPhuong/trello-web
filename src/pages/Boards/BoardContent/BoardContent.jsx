@@ -11,10 +11,10 @@ import {
   useSensors,
   DragOverlay,
   defaultDropAnimationSideEffects,
-  closestCenter,
+  // closestCenter,
   closestCorners,
   pointerWithin,
-  rectIntersection,
+  // rectIntersection,
   getFirstCollision
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
@@ -335,25 +335,27 @@ function BoardContent({ board }) {
         return closestCorners({ ...args })
       }
 
-      // Tìm các điểm giao nhau, va chạm với con trỏ
+      // Tìm các điểm giao nhau, va chạm với con trỏ trả về một mảng các va chạm
       const poiterIntersections = pointerWithin(args)
 
-      // Thuật toán phát hiện va chạm sẽ trả về 1 mảng các va chạm ở đây
-      const intersections = !!poiterIntersections?.length
-        ? poiterIntersections
-        : rectIntersection(args)
+      if (!poiterIntersections?.length) return
 
-      // Tìm overId đầu tiên trong các intersections ở trên
-      let overId = getFirstCollision(intersections, 'id')
+      // Thuật toán phát hiện va chạm sẽ trả về một mảng các va chạm ở đây
+      // const intersections = !!poiterIntersections?.length
+      //   ? poiterIntersections
+      //   : rectIntersection(args)
+
+      // Tìm overId đầu tiên trong các poiterIntersections ở trên
+      let overId = getFirstCollision(poiterIntersections, 'id')
       if (overId) {
         const checkColumn = orderedColumns.find(
           (column) => column._id === overId
         )
 
-        // Nếu over là column thì sẽ tìm tới cardId gần nhất bên trong khu vực va chạm đó bằng thuật toán closestCenter (sử dụng closestCenter mượt hơn closestCorners)
+        // Nếu over là column thì sẽ tìm tới cardId gần nhất bên trong khu vực va chạm đó bằng thuật toán closestCorners (sử dụng closestCorners mượt hơn closestCenter)
         if (checkColumn) {
           // console.log('Before:', overId)
-          overId = closestCenter({
+          overId = closestCorners({
             ...args,
             droppableContainers: args.droppableContainers.filter(
               (container) => {
