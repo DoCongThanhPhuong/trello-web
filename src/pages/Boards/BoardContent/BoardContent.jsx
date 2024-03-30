@@ -32,7 +32,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-function BoardContent({ board, createNewColumn, createNewCard }) {
+function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   activationConstraint: { distance: 10 }
   // })
@@ -315,12 +315,9 @@ function BoardContent({ board, createNewColumn, createNewCard }) {
           newColumnIndex
         )
 
-        // 2 console.log dữ liệu này dùng để xử lý gọi API
-        // const dndOrderedColumnsIds = dndOrderedColumns.map((c) => c._id)
-        // console.log(dndOrderedColumns)
-        // console.log(dndOrderedColumnsIds)
+        moveColumns(dndOrderedColumns)
 
-        // Cập nhật lại state columns ban đầu sau khi đã kéo thả
+        // Vẫn cập nhật lại state columns ở đây để tránh delay hoặc flickering giao diện lúc kéo thả cần phải chờ API
         setOrderedColumns(dndOrderedColumns)
       }
     }
