@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import ListColumns from './ListColumns/ListColumns'
-import { mapOrder } from '~/utils/sorts'
 
 import {
   DndContext,
@@ -32,7 +31,13 @@ const ACTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
+function BoardContent({
+  board,
+  createNewColumn,
+  createNewCard,
+  moveColumns,
+  moveCardInTheSameColumn
+}) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   activationConstraint: { distance: 10 }
   // })
@@ -65,7 +70,8 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
   const lastOverId = useRef(null)
 
   useEffect(() => {
-    setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
+    // Columns đã được sắp xếp ở component cha cao nhất
+    setOrderedColumns(board.columns)
   }, [board])
 
   const findColumnByCardId = (cardId) => {
@@ -275,7 +281,9 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
           oldCardIndex,
           newCardIndex
         )
+        const dndOrderedCardIds = dndOrderedCards.map((card) => card._id)
 
+        // Vẫn cập nhật lại state cards ở đây để tránh delay hoặc flickering giao diện lúc kéo thả cần phải chờ API
         setOrderedColumns((prevColumns) => {
           // Clone mảng cũ ra một cái mới để xử lý data rồi return - Cập nhật lại mảng mới
           const nextColumns = cloneDeep(prevColumns)
@@ -287,11 +295,17 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
 
           // Cập nhật lại 2 giá trị là card và cardOrderIds trong targetColumn
           targetColumn.cards = dndOrderedCards
-          targetColumn.cardOrderIds = dndOrderedCards.map((card) => card._id)
+          targetColumn.cardOrderIds = dndOrderedCardIds
 
           // Trả về giá trị state mới (chuẩn vị trí)
           return nextColumns
         })
+
+        moveCardInTheSameColumn(
+          dndOrderedCards,
+          dndOrderedCardIds,
+          oldColumnWhenDraggingCard._id
+        )
       }
     }
 
@@ -315,10 +329,10 @@ function BoardContent({ board, createNewColumn, createNewCard, moveColumns }) {
           newColumnIndex
         )
 
-        moveColumns(dndOrderedColumns)
-
         // Vẫn cập nhật lại state columns ở đây để tránh delay hoặc flickering giao diện lúc kéo thả cần phải chờ API
         setOrderedColumns(dndOrderedColumns)
+
+        moveColumns(dndOrderedColumns)
       }
     }
 
