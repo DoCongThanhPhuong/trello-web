@@ -181,6 +181,22 @@ function Board() {
     })
   }
 
+  // Xử lý cập nhật title của một Column
+  const updateColumnTitle = (columnId, newTitle) => {
+    // Cập nhật cho chuẩn dữ liệu state Board
+    const newBoard = { ...board }
+    const columnToUpdate = newBoard.columns.find(
+      (column) => column._id === columnId
+    )
+    if (columnToUpdate) {
+      columnToUpdate.title = newTitle
+    }
+    setBoard(newBoard)
+
+    // Gọi API xử lý phía BE
+    updateColumnDetailsAPI(columnId, { title: newTitle })
+  }
+
   if (!board) {
     return (
       <Box
@@ -211,6 +227,7 @@ function Board() {
         moveCardInTheSameColumn={moveCardInTheSameColumn}
         moveCardToDifferentColumn={moveCardToDifferentColumn}
         deleteColumnDetails={deleteColumnDetails}
+        updateColumnTitle={updateColumnTitle}
       />
     </Container>
   )
