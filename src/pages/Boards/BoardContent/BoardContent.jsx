@@ -38,7 +38,8 @@ function BoardContent({
   moveColumns,
   moveCardInTheSameColumn,
   moveCardToDifferentColumn,
-  deleteColumnDetails
+  deleteColumnDetails,
+  updateColumnTitle
 }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   activationConstraint: { distance: 10 }
@@ -445,6 +446,7 @@ function BoardContent({
           createNewColumn={createNewColumn}
           createNewCard={createNewCard}
           deleteColumnDetails={deleteColumnDetails}
+          updateColumnTitle={updateColumnTitle}
         />
         <DragOverlay dropAnimation={dropAnimation}>
           {!activeDragItemType && null}
