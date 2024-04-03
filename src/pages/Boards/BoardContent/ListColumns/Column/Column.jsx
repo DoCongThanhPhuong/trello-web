@@ -119,7 +119,7 @@ function Column({
   const toggleOpenColumnTitleForm = () =>
     setOpenColumnTitleForm(!openColumnTitleForm)
 
-  const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState('')
+  const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState(column.title)
 
   const updateNewColumnTitle = () => {
     if (!newUpdateColumnTitle) {
@@ -131,7 +131,7 @@ function Column({
 
     // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenColumnTitleForm()
-    setNewUpdateColumnTitle('')
+    setNewUpdateColumnTitle(column.title)
   }
 
   // Xử lý xóa một Column và Cards bên trong nó
@@ -295,7 +295,7 @@ function Column({
               }}
             >
               <TextField
-                label="Enter card title..."
+                label="Enter column title..."
                 type="text"
                 size="small"
                 variant="outlined"
