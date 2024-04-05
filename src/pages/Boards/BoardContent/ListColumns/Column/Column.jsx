@@ -127,6 +127,12 @@ function Column({
       return
     }
 
+    // Nếu title mới trùng với title cũ thì không làm gì cả
+    if (newUpdateColumnTitle === column.title) {
+      toggleOpenColumnTitleForm()
+      return
+    }
+
     updateColumnTitle(column._id, newUpdateColumnTitle)
 
     // Đóng trạng thái thêm Card mới & Clear Input
