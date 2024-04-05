@@ -193,7 +193,7 @@ function Boards() {
                 }}
                 startIcon={<AddIcon />}
               >
-                Add another list
+                Create a new board
               </Button>
             </Box>
           ) : (
@@ -212,7 +212,7 @@ function Boards() {
               }}
             >
               <TextField
-                label="Enter list title..."
+                label="Enter board title..."
                 type="text"
                 size="small"
                 variant="outlined"
@@ -249,7 +249,7 @@ function Boards() {
                     }
                   }}
                 >
-                  Add list
+                  Create
                 </Button>
                 <CloseIcon
                   onClick={toggleOpenNewBoardForm}
