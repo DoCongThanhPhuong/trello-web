@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/boards/:id", "destination": "/boards/:id" }]
+  "routes": [
+    { "src": "/", "dest": "/" },
+    { "src": "/boards/:id", "dest": "/" }
+  ]
 }
