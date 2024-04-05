@@ -20,13 +20,15 @@ import { generatePlaceholderCard } from '~/utils/formatters'
 import { isEmpty } from 'lodash'
 import { Box, Typography } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
+import { useParams } from 'react-router-dom'
 
 function Board() {
   const [board, setBoard] = useState(null)
+  const param = useParams()
 
   useEffect(() => {
-    // Tạm thời fix cứng boardId, về sau sử dụng react-router-dom để lấy boarId chuẩn từ URL về
-    const boardId = '65fabae5b7d812b159b77124'
+    // Sử dụng react-router-dom để lấy boarId chuẩn từ URL về
+    const boardId = param?.id
     // Call API
     fetchBoardDetailsAPI(boardId).then((board) => {
       // Sắp xếp thứ tự các Columns ở đây trước khi đưa dữ liệu xuống bên dưới các components con
@@ -44,7 +46,7 @@ function Board() {
       })
       setBoard(board)
     })
-  }, [])
+  }, [param?.id])
 
   // Func này có nhiệm vụ gọi API tạo mới Column và làm mới dữ liệu State Board
   const createNewColumn = async (newColumnData) => {
