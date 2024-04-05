@@ -199,8 +199,8 @@ function Boards() {
           ) : (
             <Box
               sx={{
-                minWidth: '250px',
-                maxWidth: '250px',
+                minWidth: '300px',
+                maxWidth: '300px',
                 mx: 2,
                 p: 1,
                 borderRadius: '6px',
