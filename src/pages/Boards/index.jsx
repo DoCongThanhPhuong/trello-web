@@ -180,8 +180,7 @@ function Boards() {
                 maxWidth: '300px',
                 borderRadius: '6px',
                 height: 'fit-content',
-                bgcolor: '#3333333d',
-                paddingX: '32px'
+                bgcolor: '#3333333d'
               }}
             >
               <Button
@@ -189,7 +188,7 @@ function Boards() {
                   color: 'black',
                   width: '100%',
                   justifyContent: 'flex-start',
-                  pl: 2.5,
+                  paddingX: '32px',
                   py: 1
                 }}
                 startIcon={<AddIcon />}
