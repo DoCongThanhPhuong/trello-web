@@ -33,6 +33,11 @@ export const getListByUserIdAPI = async (userId) => {
   return response.data
 }
 
+export const createNewBoardAPI = async (newBoardsData) => {
+  const response = await axios.post(`${API_ROOT}/v1/boards`, newBoardsData)
+  return response.data
+}
+
 // Columns
 export const createNewColumnAPI = async (newColumnData) => {
   const response = await axios.post(`${API_ROOT}/v1/columns`, newColumnData)

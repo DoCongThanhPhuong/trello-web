@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AppBar from '~/components/AppBar/AppBar'
+import Loading from '~/components/Loading/Loading'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -24,17 +25,41 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import GridViewIcon from '@mui/icons-material/GridView'
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import SettingsIcon from '@mui/icons-material/Settings'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
 
 import { Link } from 'react-router-dom'
-import { getListByUserIdAPI } from '~/apis'
+import { createNewBoardAPI, getListByUserIdAPI } from '~/apis'
 
 function Boards() {
+  const drawerWidth = 200
+  const INPUT_STYLES = {
+    '& label': { color: 'white' },
+    '& input': { color: 'white' },
+    '& label.Mui-focused': { color: 'white' },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'white'
+      },
+      '&:hover fieldset': {
+        borderColor: 'white'
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'white'
+      }
+    }
+  }
+
   const [boards, setBoards] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const userId = '660d9ecc1ffe4efc25355109'
 
   useEffect(() => {
     // Tạm thời fix cứng userId
-    getListByUserIdAPI(userId).then((boards) => setBoards(boards))
+    getListByUserIdAPI(userId).then((boards) => {
+      setBoards(boards)
+      setIsLoading(false)
+    })
   }, [])
 
   const [openNewBoardForm, setOpenNewBoardForm] = useState(false)
@@ -42,8 +67,11 @@ function Boards() {
 
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [newBoardDescription, setNewBoardDescription] = useState('')
+  const [newBoardType, setNewBoardType] = useState(true)
 
-  const addNewBoard = () => {
+  const handleChange = () => setNewBoardType(!newBoardType)
+
+  const addNewBoard = async () => {
     if (!newBoardTitle) {
       toast.error('Please enter board title!')
       return
@@ -57,24 +85,39 @@ function Boards() {
     // Tạo dữ liệu Board để gọi API
     const newBoardData = {
       title: newBoardTitle,
-      desciption: newBoardDescription,
-      userId: userId
+      description: newBoardDescription,
+      ownerIds: [userId],
+      memberIds: [userId],
+      type: newBoardType ? 'public' : 'private'
     }
 
-    // Đóng trạng thái thêm Board mới & Clear Input
+    const createdBoard = await createNewBoardAPI({
+      ...newBoardData
+    })
+
+    // Cập nhật state Boards
+    const newBoards = [...boards]
+    newBoards.push(createdBoard)
+    setBoards(newBoards)
+
+    // Đóng trạng thái thêm Board mới & Clear Inputs
     toggleOpenNewBoardForm()
     setNewBoardTitle('')
     setNewBoardDescription('')
+    setNewBoardType(true)
   }
 
-  const drawerWidth = 200
+  if (isLoading) {
+    return <Loading />
+  }
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
         display: 'flex',
-        bgcolor: '#efefef'
+        bgcolor: (theme) =>
+          theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'
       }}
     >
       <MuiAppBar
@@ -144,7 +187,7 @@ function Boards() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3, overflowX: 'auto' }}>
         <Toolbar />
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, paddingX: 4 }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingX: 4 }}>
           {boards.map((board) => (
             <Card
               key={board?._id}
@@ -158,9 +201,7 @@ function Boards() {
             >
               <Link
                 style={{
-                  textDecoration: 'none',
-                  color: (theme) =>
-                    theme.palette.mode === 'dark' ? 'white' : 'black'
+                  textDecoration: 'none'
                 }}
                 to={`/boards/${board?._id}`}
               >
@@ -193,12 +234,12 @@ function Boards() {
                 maxWidth: '300px',
                 borderRadius: '6px',
                 height: 'fit-content',
-                bgcolor: '#3333333d'
+                bgcolor: 'rgba(0, 0, 0, 0.6)'
               }}
             >
               <Button
                 sx={{
-                  color: 'black',
+                  color: 'white',
                   width: '100%',
                   justifyContent: 'flex-start',
                   paddingX: '32px',
@@ -217,7 +258,7 @@ function Boards() {
                 p: 2,
                 borderRadius: '6px',
                 height: 'fit-content',
-                bgcolor: '#3333333d',
+                bgcolor: 'rgba(0, 0, 0, 0.6)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2
@@ -231,22 +272,7 @@ function Boards() {
                 autoFocus
                 value={newBoardTitle}
                 onChange={(e) => setNewBoardTitle(e.target.value)}
-                sx={{
-                  '& label': { color: 'black' },
-                  '& input': { color: 'black' },
-                  '& label.Mui-focused': { color: 'black' },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
+                sx={INPUT_STYLES}
               />
               <TextField
                 label="Enter board description..."
@@ -255,23 +281,24 @@ function Boards() {
                 variant="outlined"
                 value={newBoardDescription}
                 onChange={(e) => setNewBoardDescription(e.target.value)}
-                sx={{
-                  '& label': { color: 'black' },
-                  '& input': { color: 'black' },
-                  '& label.Mui-focused': { color: 'black' },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&:hover fieldset': {
-                      borderColor: 'black'
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'black'
-                    }
-                  }
-                }}
+                sx={INPUT_STYLES}
               />
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <Typography sx={{ color: 'white' }}>Type: </Typography>
+                <FormControlLabel
+                  control={
+                    <Switch checked={newBoardType} onChange={handleChange} />
+                  }
+                  label={newBoardType ? 'Public' : 'Private'}
+                  sx={{ color: 'white' }}
+                />
+              </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
                   onClick={addNewBoard}
@@ -291,7 +318,7 @@ function Boards() {
                   onClick={toggleOpenNewBoardForm}
                   fontSize="small"
                   sx={{
-                    color: 'black',
+                    color: 'white',
                     cursor: 'pointer',
                     '&:hover': { color: (theme) => theme.palette.warning.light }
                   }}
