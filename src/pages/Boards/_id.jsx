@@ -4,7 +4,9 @@ import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import { mapOrder } from '~/utils/sorts'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // import { mockData } from '~/apis/mock-data'
 import {
@@ -16,11 +18,10 @@ import {
   moveCardToDifferentColumnAPI,
   deleteColumnDetailsAPI
 } from '~/apis'
-import { generatePlaceholderCard } from '~/utils/formatters'
 import { isEmpty } from 'lodash'
-import { Box, Typography } from '@mui/material'
-import CircularProgress from '@mui/material/CircularProgress'
+import { mapOrder } from '~/utils/sorts'
 import { useParams } from 'react-router-dom'
+import { generatePlaceholderCard } from '~/utils/formatters'
 
 function Board() {
   const [board, setBoard] = useState(null)

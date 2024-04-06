@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AppBar from '~/components/AppBar/AppBar'
 import Box from '@mui/material/Box'
@@ -26,35 +26,48 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import SettingsIcon from '@mui/icons-material/Settings'
 
 import { Link } from 'react-router-dom'
+import { getListByUserIdAPI } from '~/apis'
 
 function Boards() {
-  const boards = [
-    { _id: '65fabae5b7d812b159b77124', title: 'Board 01 Thanh Phương' },
-    { _id: '660e9c6f06bb0b2e253c6390', title: 'Board 02 Thanh Phương' }
-  ]
+  const [boards, setBoards] = useState([])
+  const userId = '660d9ecc1ffe4efc25355109'
 
-  const drawerWidth = 200
+  useEffect(() => {
+    // Tạm thời fix cứng userId
+    getListByUserIdAPI(userId).then((boards) => setBoards(boards))
+  }, [])
 
   const [openNewBoardForm, setOpenNewBoardForm] = useState(false)
   const toggleOpenNewBoardForm = () => setOpenNewBoardForm(!openNewBoardForm)
 
   const [newBoardTitle, setNewBoardTitle] = useState('')
+  const [newBoardDescription, setNewBoardDescription] = useState('')
 
   const addNewBoard = () => {
     if (!newBoardTitle) {
-      toast.error('Please enter list title!')
+      toast.error('Please enter board title!')
+      return
+    }
+
+    if (!newBoardDescription) {
+      toast.error('Please enter board description!')
       return
     }
 
     // Tạo dữ liệu Board để gọi API
     const newBoardData = {
-      title: newBoardTitle
+      title: newBoardTitle,
+      desciption: newBoardDescription,
+      userId: userId
     }
 
     // Đóng trạng thái thêm Board mới & Clear Input
     toggleOpenNewBoardForm()
     setNewBoardTitle('')
+    setNewBoardDescription('')
   }
+
+  const drawerWidth = 200
 
   return (
     <Box
@@ -201,14 +214,13 @@ function Boards() {
               sx={{
                 minWidth: '300px',
                 maxWidth: '300px',
-                mx: 2,
-                p: 1,
+                p: 2,
                 borderRadius: '6px',
                 height: 'fit-content',
                 bgcolor: '#3333333d',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 1
+                gap: 2
               }}
             >
               <TextField
@@ -219,6 +231,30 @@ function Boards() {
                 autoFocus
                 value={newBoardTitle}
                 onChange={(e) => setNewBoardTitle(e.target.value)}
+                sx={{
+                  '& label': { color: 'black' },
+                  '& input': { color: 'black' },
+                  '& label.Mui-focused': { color: 'black' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: 'black'
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'black'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'black'
+                    }
+                  }
+                }}
+              />
+              <TextField
+                label="Enter board description..."
+                type="text"
+                size="small"
+                variant="outlined"
+                value={newBoardDescription}
+                onChange={(e) => setNewBoardDescription(e.target.value)}
                 sx={{
                   '& label': { color: 'black' },
                   '& input': { color: 'black' },

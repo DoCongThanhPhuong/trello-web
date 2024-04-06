@@ -28,6 +28,11 @@ export const moveCardToDifferentColumnAPI = async (updateData) => {
   return response.data
 }
 
+export const getListByUserIdAPI = async (userId) => {
+  const response = await axios.get(`${API_ROOT}/v1/boards/user/${userId}`)
+  return response.data
+}
+
 // Columns
 export const createNewColumnAPI = async (newColumnData) => {
   const response = await axios.post(`${API_ROOT}/v1/columns`, newColumnData)
