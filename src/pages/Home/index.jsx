@@ -43,7 +43,7 @@ const Home = () => {
           >
             Keep everything in the same place—even if your team isn’t.
           </Typography>
-          <Link to={'/boards'} style={{ textDecoration: 'none' }}>
+          <Link to={'/login'} style={{ textDecoration: 'none' }}>
             <Box
               sx={{
                 display: 'inline-block',
