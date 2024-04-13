@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AppBar from '~/components/AppBar/AppBar'
 import Loading from '~/components/Loading/Loading'
@@ -30,6 +30,7 @@ import Switch from '@mui/material/Switch'
 
 import { Link } from 'react-router-dom'
 import { createNewBoardAPI, getListByUserIdAPI } from '~/apis'
+import { AuthContext } from '~/contexts/AuthProvider'
 
 function Boards() {
   const drawerWidth = 200
@@ -52,15 +53,16 @@ function Boards() {
 
   const [boards, setBoards] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const userId = '660d9ecc1ffe4efc25355109'
+  const {
+    user: { uid }
+  } = useContext(AuthContext)
 
   useEffect(() => {
-    // Tạm thời fix cứng userId
-    getListByUserIdAPI(userId).then((boards) => {
+    getListByUserIdAPI(uid).then((boards) => {
       setBoards(boards)
       setIsLoading(false)
     })
-  }, [])
+  }, [uid])
 
   const [openNewBoardForm, setOpenNewBoardForm] = useState(false)
   const toggleOpenNewBoardForm = () => setOpenNewBoardForm(!openNewBoardForm)
@@ -82,12 +84,12 @@ function Boards() {
       return
     }
 
-    // Tạo dữ liệu Board để gọi API
+    // Tạo dữ liệu cho Board mới để gọi API
     const newBoardData = {
       title: newBoardTitle,
       description: newBoardDescription,
-      ownerIds: [userId],
-      memberIds: [userId],
+      ownerIds: [uid],
+      memberIds: [uid],
       type: newBoardType ? 'public' : 'private'
     }
 
@@ -208,7 +210,7 @@ function Boards() {
                 <CardMedia
                   sx={{ height: '180px' }}
                   image="https://avatars.githubusercontent.com/u/99084016?s=400&u=c3f9fa59deca6877371fa38f62311303a0757fa7&v=4"
-                  title="green iguana"
+                  title={board?.title}
                 />
                 <CardContent sx={{ p: 1.5 }}>
                   <Typography
