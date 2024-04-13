@@ -1,18 +1,27 @@
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth'
 import { Navigate } from 'react-router-dom'
 
-export default function Login() {
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import { createNewUserAPI } from '~/apis'
+
+function AuthPage() {
   const auth = getAuth()
 
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
 
     const {
-      user: { uid, displayName }
+      user: { uid, email, photoURL, displayName }
     } = await signInWithPopup(auth, provider)
+
+    createNewUserAPI({
+      uid: uid,
+      email: email,
+      avatar: photoURL,
+      displayName: displayName
+    })
   }
 
   if (localStorage.getItem('accessToken')) {
@@ -42,3 +51,5 @@ export default function Login() {
     </Box>
   )
 }
+
+export default AuthPage

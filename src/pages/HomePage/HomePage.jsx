@@ -5,7 +5,7 @@ import myteam from '~/assets/images/myteam.jpg'
 
 import { Link } from 'react-router-dom'
 
-const Home = () => {
+const HomePage = () => {
   return (
     <Box
       sx={{
@@ -43,7 +43,7 @@ const Home = () => {
           >
             Keep everything in the same place—even if your team isn’t.
           </Typography>
-          <Link to={'/login'} style={{ textDecoration: 'none' }}>
+          <Link to={'/auth'} style={{ textDecoration: 'none' }}>
             <Box
               sx={{
                 display: 'inline-block',
@@ -70,4 +70,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default HomePage

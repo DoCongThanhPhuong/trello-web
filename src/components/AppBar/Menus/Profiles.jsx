@@ -1,4 +1,4 @@
-import React from 'react'
+import { useContext, useState } from 'react'
 import Box from '@mui/material/Box'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -10,9 +10,10 @@ import IconButton from '@mui/material/IconButton'
 import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
 import Logout from '@mui/icons-material/Logout'
+import { AuthContext } from '~/contexts/AuthProvider'
 
 function Profiles() {
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -20,6 +21,13 @@ function Profiles() {
   const handleClose = () => {
     setAnchorEl(null)
   }
+  const handleLogout = () => {
+    auth.signOut()
+  }
+
+  const {
+    user: { photoURL, displayName, auth }
+  } = useContext(AuthContext)
 
   return (
     <Box>
@@ -35,7 +43,7 @@ function Profiles() {
           <Avatar
             sx={{ width: 36, height: 36 }}
             alt="DoCongThanhPhuong"
-            src=""
+            src={photoURL}
           />
         </IconButton>
       </Tooltip>
@@ -49,7 +57,7 @@ function Profiles() {
         }}
       >
         <MenuItem>
-          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> Profile
+          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> {displayName}
         </MenuItem>
         <MenuItem>
           <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> My account
@@ -67,7 +75,7 @@ function Profiles() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

@@ -88,3 +88,9 @@ export const createNewCardAPI = async (newCardData) => {
   const response = await axiosInstance.post(`${API_ROOT}/v1/cards`, newCardData)
   return response.data
 }
+
+// Users
+export const createNewUserAPI = async (newUserData) => {
+  const response = await axiosInstance.post(`${API_ROOT}/v1/users`, newUserData)
+  return response.data
+}
