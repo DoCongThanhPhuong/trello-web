@@ -44,9 +44,9 @@ export const moveCardToDifferentColumnAPI = async (updateData) => {
   return response.data
 }
 
-export const getListByUserIdAPI = async (userId) => {
+export const getBoardsByUserIdAPI = async () => {
   const response = await axiosInstance.get(
-    `${API_ROOT}/v1/boards/user/${userId}`
+    `${API_ROOT}/v1/boards/user/list_boards`
   )
   return response.data
 }
@@ -92,5 +92,10 @@ export const createNewCardAPI = async (newCardData) => {
 // Users
 export const createNewUserAPI = async (newUserData) => {
   const response = await axiosInstance.post(`${API_ROOT}/v1/users`, newUserData)
+  return response.data
+}
+
+export const getUsersByBoardIdAPI = async (boardId) => {
+  const response = await axiosInstance.get(`${API_ROOT}/v1/users/${boardId}`)
   return response.data
 }

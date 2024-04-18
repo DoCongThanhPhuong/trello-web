@@ -35,17 +35,26 @@ function AuthPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 2,
+        gap: 4,
         width: '100vw',
         height: '100vh',
         bgcolor: (theme) =>
           theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'
       }}
     >
-      <Typography variant="h5" sx={{ marginBottom: '10px', color: 'white' }}>
+      <Typography variant="h5" sx={{ color: 'white' }}>
         Welcome to Trello
       </Typography>
-      <Button sx={{ color: 'white' }} onClick={handleLoginWithGoogle}>
+      <Button
+        sx={{
+          color: 'white',
+          border: '1px solid white',
+          '&:hover': {
+            borderWidth: '1px'
+          }
+        }}
+        onClick={handleLoginWithGoogle}
+      >
         Login with Google
       </Button>
     </Box>

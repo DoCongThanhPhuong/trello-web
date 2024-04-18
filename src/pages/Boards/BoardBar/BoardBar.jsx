@@ -26,7 +26,7 @@ const MENU_STYLES = {
   }
 }
 
-function BoardBar({ board }) {
+function BoardBar({ board, members }) {
   return (
     <Box
       sx={{
@@ -108,30 +108,11 @@ function BoardBar({ board }) {
             }
           }}
         >
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
-          <Tooltip title="DoCongThanhPhuong">
-            <Avatar alt="DoCongThanhPhuong" src="" />
-          </Tooltip>
+          {members.map((member) => (
+            <Tooltip key={member._id} title={member.displayName}>
+              <Avatar alt={member.displayName} src={member.avatar} />
+            </Tooltip>
+          ))}
         </AvatarGroup>
       </Box>
     </Box>
