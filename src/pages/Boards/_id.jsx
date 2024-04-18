@@ -14,7 +14,8 @@ import {
   updateColumnDetailsAPI,
   createNewCardAPI,
   moveCardToDifferentColumnAPI,
-  deleteColumnDetailsAPI
+  deleteColumnDetailsAPI,
+  getUsersByBoardIdAPI
 } from '~/apis'
 import { isEmpty } from 'lodash'
 import { mapOrder } from '~/utils/sorts'
@@ -23,6 +24,7 @@ import { generatePlaceholderCard } from '~/utils/formatters'
 
 function Board() {
   const [board, setBoard] = useState(null)
+  const [members, setMembers] = useState([])
   const param = useParams()
 
   useEffect(() => {
@@ -44,6 +46,10 @@ function Board() {
         }
       })
       setBoard(board)
+
+      getUsersByBoardIdAPI(board._id).then((members) => {
+        setMembers(members)
+      })
     })
   }, [param?.id])
 
@@ -205,7 +211,7 @@ function Board() {
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <AppBar />
-      <BoardBar board={board} />
+      <BoardBar board={board} members={members} />
       <BoardContent
         board={board}
         createNewColumn={createNewColumn}

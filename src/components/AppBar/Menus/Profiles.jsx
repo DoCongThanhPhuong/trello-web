@@ -10,9 +10,14 @@ import IconButton from '@mui/material/IconButton'
 import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
 import Logout from '@mui/icons-material/Logout'
-import { AuthContext } from '~/contexts/AuthProvider'
+import { AuthContext } from '~/context/AuthProvider'
+import { Link } from 'react-router-dom'
 
 function Profiles() {
+  const {
+    user: { photoURL, displayName, auth }
+  } = useContext(AuthContext)
+
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -24,10 +29,6 @@ function Profiles() {
   const handleLogout = () => {
     auth.signOut()
   }
-
-  const {
-    user: { photoURL, displayName, auth }
-  } = useContext(AuthContext)
 
   return (
     <Box>
@@ -56,12 +57,25 @@ function Profiles() {
           'aria-labelledby': 'basic-button-profiles'
         }}
       >
-        <MenuItem>
-          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> {displayName}
-        </MenuItem>
-        <MenuItem>
-          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> My account
-        </MenuItem>
+        <Link
+          style={{
+            textDecoration: 'none'
+          }}
+          to={'/u/profile'}
+        >
+          <MenuItem
+            sx={{
+              color: (theme) =>
+                theme.palette.mode === 'dark' ? 'white' : 'black'
+            }}
+          >
+            <Avatar
+              sx={{ width: '28px', height: '28px', mr: 2 }}
+              src={photoURL}
+            />
+            {displayName}
+          </MenuItem>
+        </Link>
         <Divider />
         <MenuItem>
           <ListItemIcon>
