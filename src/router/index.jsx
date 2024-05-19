@@ -1,5 +1,4 @@
-import { createBrowserRouter, Outlet } from 'react-router-dom'
-import AuthProvider from '~/context/AuthProvider'
+import { createBrowserRouter } from 'react-router-dom'
 import AuthPage from '~/pages/AuthPage/AuthPage'
 import HomePage from '~/pages/HomePage/HomePage'
 import ErrorPage from '~/pages/ErrorPage/ErrorPage'
@@ -7,18 +6,9 @@ import ProtectedRoute from './ProtectedRoute'
 import Boards from '~/pages/Boards'
 import Board from '~/pages/Boards/_id'
 import UserProfile from '~/pages/Users/_id'
+import AuthLayout from './AuthLayout'
 
-// eslint-disable-next-line react-refresh/only-export-components
-const AuthLayout = () => {
-  return (
-    <AuthProvider>
-      <Outlet />
-    </AuthProvider>
-  )
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export default createBrowserRouter([
+const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     errorElement: <ErrorPage />,
@@ -44,10 +34,12 @@ export default createBrowserRouter([
           },
           {
             element: <UserProfile />,
-            path: '/u/profile'
+            path: '/u/profile/:id'
           }
         ]
       }
     ]
   }
 ])
+
+export default router

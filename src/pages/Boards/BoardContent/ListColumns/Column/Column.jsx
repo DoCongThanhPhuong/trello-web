@@ -26,39 +26,39 @@ import { useConfirm } from 'material-ui-confirm'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
+const INPUT_STYLES = {
+  '& label': { color: 'text.primary' },
+  '& input': {
+    color: (theme) => theme.palette.primary.main,
+    bgcolor: (theme) => {
+      theme.palette.mode === 'dark' ? '#333643' : 'white'
+    }
+  },
+  '& label.Mui-focused': {
+    color: (theme) => theme.palette.primary.main
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: (theme) => theme.palette.primary.main
+    },
+    '&:hover fieldset': {
+      borderColor: (theme) => theme.palette.primary.main
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: (theme) => theme.palette.primary.main
+    }
+  },
+  '& .MuiOutlinedInput-input': {
+    borderRadius: 1
+  }
+}
+
 function Column({
   column,
   createNewCard,
   deleteColumnDetails,
   updateColumnTitle
 }) {
-  const INPUT_STYLES = {
-    '& label': { color: 'text.primary' },
-    '& input': {
-      color: (theme) => theme.palette.primary.main,
-      bgcolor: (theme) => {
-        theme.palette.mode === 'dark' ? '#333643' : 'white'
-      }
-    },
-    '& label.Mui-focused': {
-      color: (theme) => theme.palette.primary.main
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: (theme) => theme.palette.primary.main
-      },
-      '&:hover fieldset': {
-        borderColor: (theme) => theme.palette.primary.main
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: (theme) => theme.palette.primary.main
-      }
-    },
-    '& .MuiOutlinedInput-input': {
-      borderRadius: 1
-    }
-  }
-
   const {
     attributes,
     listeners,

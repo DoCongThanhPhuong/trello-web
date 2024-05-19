@@ -31,25 +31,25 @@ import Switch from '@mui/material/Switch'
 import { Link } from 'react-router-dom'
 import { createNewBoardAPI, getBoardsByUserIdAPI } from '~/apis'
 
-function Boards() {
-  const drawerWidth = 200
-  const INPUT_STYLES = {
-    '& label': { color: 'white' },
-    '& input': { color: 'white' },
-    '& label.Mui-focused': { color: 'white' },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'white'
-      },
-      '&:hover fieldset': {
-        borderColor: 'white'
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'white'
-      }
+const DRAWER_WIDTH = 200
+const INPUT_STYLES = {
+  '& label': { color: 'white' },
+  '& input': { color: 'white' },
+  '& label.Mui-focused': { color: 'white' },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'white'
+    },
+    '&:hover fieldset': {
+      borderColor: 'white'
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: 'white'
     }
   }
+}
 
+function Boards() {
   const [boards, setBoards] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -62,7 +62,6 @@ function Boards() {
 
   const [openNewBoardForm, setOpenNewBoardForm] = useState(false)
   const toggleOpenNewBoardForm = () => setOpenNewBoardForm(!openNewBoardForm)
-
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [newBoardDescription, setNewBoardDescription] = useState('')
   const [newBoardType, setNewBoardType] = useState(true)
@@ -110,8 +109,8 @@ function Boards() {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
         display: 'flex',
+        minHeight: '100vh',
         bgcolor: (theme) =>
           theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'
       }}
@@ -126,10 +125,10 @@ function Boards() {
         variant="permanent"
         sx={{
           display: { xs: 'none', md: 'flex' },
-          width: drawerWidth,
+          width: DRAWER_WIDTH,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: drawerWidth,
+            width: DRAWER_WIDTH,
             boxSizing: 'border-box'
           }
         }}
@@ -137,53 +136,35 @@ function Boards() {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText>Boards</ListItemText>
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <FavoriteBorderIcon />
-                </ListItemIcon>
-                <ListItemText>Hightlights</ListItemText>
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <GridViewIcon />
-                </ListItemIcon>
-                <ListItemText>Views</ListItemText>
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <PeopleAltIcon />
-                </ListItemIcon>
-                <ListItemText>Members</ListItemText>
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText>Settings</ListItemText>
-              </ListItemButton>
-            </ListItem>
+            {[
+              { text: 'Boards', icon: <DashboardIcon /> },
+              { text: 'Hightlights', icon: <FavoriteBorderIcon /> },
+              { text: 'Views', icon: <GridViewIcon /> },
+              { text: 'Members', icon: <PeopleAltIcon /> },
+              { text: 'Settings', icon: <SettingsIcon /> }
+            ].map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText>{item.text}</ListItemText>
+                </ListItemButton>
+              </ListItem>
+            ))}
           </List>
           <Divider />
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, overflowX: 'auto' }}>
+      <Box component="main" sx={{ flexGrow: 1, py: 3, overflowX: 'auto' }}>
         <Toolbar />
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingX: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 4,
+            flexWrap: 'wrap',
+            minWidth: '700px',
+            paddingLeft: 4
+          }}
+        >
           {boards.map((board) => (
             <Card
               key={board?._id}
@@ -196,14 +177,12 @@ function Boards() {
               }}
             >
               <Link
-                style={{
-                  textDecoration: 'none'
-                }}
                 to={`/boards/${board?._id}`}
+                style={{ textDecoration: 'none' }}
               >
                 <CardMedia
                   sx={{ height: '180px' }}
-                  image="/cardbg.jpg"
+                  image="/boardbg.jpg"
                   title={board?.title}
                 />
                 <CardContent sx={{ p: 1.5 }}>

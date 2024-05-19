@@ -6,36 +6,33 @@ import Loading from '~/components/Loading/Loading'
 export const AuthContext = createContext()
 
 export default function AuthProvider({ children }) {
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState(null)
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
 
   const auth = getAuth()
 
   useEffect(() => {
-    const unsubcribed = auth.onIdTokenChanged((user) => {
+    const unsubscribe = auth.onIdTokenChanged((user) => {
       if (user?.uid) {
         setUser(user)
-        if (user.accessToken !== localStorage.getItem('accessToken')) {
-          localStorage.setItem('accessToken', user.accessToken)
+        const token = user.accessToken
+        if (token !== localStorage.getItem('accessToken')) {
+          localStorage.setItem('accessToken', token)
           window.location.reload()
         }
         setIsLoading(false)
-        return
+      } else {
+        // Reset user info
+        setUser(null)
+        localStorage.clear()
+        setIsLoading(false)
+        navigate('/')
       }
-
-      // reset user info
-      setIsLoading(false)
-      setUser({})
-      localStorage.clear()
-      navigate('/')
     })
 
-    return () => {
-      unsubcribed()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth])
+    return unsubscribe
+  }, [navigate, auth])
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
