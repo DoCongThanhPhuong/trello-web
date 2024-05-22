@@ -1,13 +1,15 @@
-import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth'
-import { Navigate } from 'react-router-dom'
-
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
+import { useEffect, useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { createNewUserAPI } from '~/apis'
 
 function AuthPage() {
   const auth = getAuth()
+  const navigate = useNavigate()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
@@ -16,13 +18,23 @@ function AuthPage() {
       user: { uid, email, photoURL, displayName }
     } = await signInWithPopup(auth, provider)
 
-    createNewUserAPI({
+    await createNewUserAPI({
       uid: uid,
       email: email,
       avatar: photoURL,
       displayName: displayName
     })
+
+    const token = await auth.currentUser.getIdToken(true)
+    localStorage.setItem('accessToken', token)
+    setIsAuthenticated(true)
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/boards')
+    }
+  }, [isAuthenticated, navigate])
 
   if (localStorage.getItem('accessToken')) {
     return <Navigate to="/boards" />

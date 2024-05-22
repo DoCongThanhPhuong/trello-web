@@ -1,12 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom'
 import AuthPage from '~/pages/AuthPage/AuthPage'
-import HomePage from '~/pages/HomePage/HomePage'
-import ErrorPage from '~/pages/ErrorPage/ErrorPage'
-import ProtectedRoute from './ProtectedRoute'
 import Boards from '~/pages/Boards'
 import Board from '~/pages/Boards/_id'
+import ErrorPage from '~/pages/ErrorPage/ErrorPage'
+import HomePage from '~/pages/HomePage/HomePage'
 import UserProfile from '~/pages/Users/_id'
 import AuthLayout from './AuthLayout'
+import ProtectedRoute from './ProtectedRoute'
 
 const router = createBrowserRouter([
   {
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
           },
           {
             element: <UserProfile />,
-            path: '/u/profile/:id'
+            path: '/u/profile/:uid'
           }
         ]
       }

@@ -1,21 +1,21 @@
-import { useContext, useState } from 'react'
-import Box from '@mui/material/Box'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Divider from '@mui/material/Divider'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Avatar from '@mui/material/Avatar'
-import Tooltip from '@mui/material/Tooltip'
-import IconButton from '@mui/material/IconButton'
+import Logout from '@mui/icons-material/Logout'
 import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
-import Logout from '@mui/icons-material/Logout'
-import { AuthContext } from '~/context/AuthProvider'
+import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
+import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthContext } from '~/context/AuthProvider'
 
 function Profiles() {
   const {
-    user: { photoURL, displayName, auth }
+    user: { uid, photoURL, displayName, auth }
   } = useContext(AuthContext)
 
   const [anchorEl, setAnchorEl] = useState(null)
@@ -61,7 +61,7 @@ function Profiles() {
           style={{
             textDecoration: 'none'
           }}
-          to={'/u/profile'}
+          to={`/u/profile/${uid}`}
         >
           <MenuItem
             sx={{

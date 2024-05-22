@@ -1,6 +1,7 @@
-import { createContext, useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth'
+import { createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Loading from '~/components/Loading/Loading'
 
 export const AuthContext = createContext()
@@ -13,13 +14,37 @@ export default function AuthProvider({ children }) {
   const auth = getAuth()
 
   useEffect(() => {
-    const unsubscribe = auth.onIdTokenChanged((user) => {
+    const checkTokenExpiration = async () => {
+      const user = auth.currentUser
+      if (user) {
+        try {
+          const tokenResult = await user.getIdTokenResult()
+          const expirationTime = new Date(tokenResult.expirationTime).getTime()
+          const currentTime = Date.now()
+          if (expirationTime < currentTime) {
+            const newToken = await user.getIdToken(true)
+            localStorage.setItem('accessToken', newToken)
+          }
+        } catch (error) {
+          toast.error('Something went wrong! Please refresh this page!')
+        }
+      }
+    }
+
+    const interval = setInterval(checkTokenExpiration, 60000)
+
+    return () => clearInterval(interval)
+  }, [auth])
+
+  useEffect(() => {
+    const unsubscribe = auth.onIdTokenChanged(async (user) => {
       if (user?.uid) {
         setUser(user)
-        const token = user.accessToken
-        if (token !== localStorage.getItem('accessToken')) {
+        try {
+          const token = await user.getIdToken()
           localStorage.setItem('accessToken', token)
-          window.location.reload()
+        } catch (error) {
+          toast.error('Something went wrong! Please refresh this page!')
         }
         setIsLoading(false)
       } else {

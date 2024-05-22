@@ -1,7 +1,7 @@
 import CssBaseline from '@mui/material/CssBaseline'
-import theme from '~/theme'
-import ReactDOM from 'react-dom/client'
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
+import ReactDOM from 'react-dom/client'
+import theme from '~/theme'
 
 // Cấu hình react-toastify
 import { ToastContainer } from 'react-toastify'

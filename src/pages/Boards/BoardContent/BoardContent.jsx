@@ -3,24 +3,24 @@ import ListColumns from './ListColumns/ListColumns'
 
 import {
   DndContext,
+  DragOverlay,
+  // closestCenter,
+  closestCorners,
+  defaultDropAnimationSideEffects,
+  // rectIntersection,
+  getFirstCollision,
+  pointerWithin,
   // PointerSensor,
   // MouseSensor,
   // TouchSensor,
   useSensor,
-  useSensors,
-  DragOverlay,
-  defaultDropAnimationSideEffects,
-  // closestCenter,
-  closestCorners,
-  pointerWithin,
-  // rectIntersection,
-  getFirstCollision
+  useSensors
 } from '@dnd-kit/core'
 import { MouseSensor, TouchSensor } from '~/customLibs/DndKitSensors'
 
 import { arrayMove } from '@dnd-kit/sortable'
-import { useEffect, useState, useCallback, useRef } from 'react'
 import { cloneDeep, isEmpty } from 'lodash'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { generatePlaceholderCard } from '~/utils/formatters'
 
 import Column from './ListColumns/Column/Column'

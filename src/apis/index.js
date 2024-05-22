@@ -1,25 +1,69 @@
+/* eslint-disable indent */
 import axios from 'axios'
+import { toast } from 'react-toastify'
 import { API_ROOT } from '~/utils/constants'
 
 // Tạo một instance mới của axios
 const axiosInstance = axios.create()
 
 // Thêm Interceptor để xử lý trước khi gửi mỗi yêu cầu
-axiosInstance.interceptors.request.use((config) => {
-  // Lấy accessToken từ localStorage
-  const accessToken = localStorage.getItem('accessToken')
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Lấy accessToken từ localStorage
+    const accessToken = localStorage.getItem('accessToken')
 
-  // Nếu có accessToken, thêm vào header Authorization của yêu cầu
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`
+    // Nếu có accessToken, thêm vào header Authorization của yêu cầu
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`
+    }
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
   }
+)
 
-  return config
-})
+// Thêm Interceptor để xử lý lỗi phản hồi từ server
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    if (error.response) {
+      // Server đã trả về phản hồi nhưng có lỗi
+      const { status, data } = error.response
 
-/** Không try catch hay then catch để bắt lỗi trong các function vì sẽ dẫn đến dư thừa code
- * Giải pháp: sử dụng Interceptors của axios để bắt lỗi tập trung
- */
+      switch (status) {
+        case 401:
+          toast.error(data.message || 'Unauthorized! Please log in again.')
+          break
+        case 403:
+          toast.error(
+            data.message ||
+              'Forbidden! You do not have permission, wait a minute to continue.'
+          )
+          break
+        case 404:
+          toast.error(data.message || 'Resource not found!')
+          break
+        case 500:
+          toast.error(data.message || 'Internal server error!')
+          break
+        default:
+          toast.error(data.message || 'An error occurred!')
+      }
+    } else if (error.request) {
+      // Yêu cầu đã được gửi nhưng không có phản hồi
+      toast.error('No response from server!')
+    } else {
+      // Có lỗi xảy ra trong quá trình thiết lập yêu cầu
+      toast.error('Error in setting up request!')
+    }
+
+    return Promise.reject(error)
+  }
+)
 
 // Boards
 export const fetchBoardDetailsAPI = async (boardId) => {

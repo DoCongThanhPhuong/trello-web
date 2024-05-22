@@ -1,28 +1,36 @@
-import Box from '@mui/material/Box'
-import Modal from '@mui/material/Modal'
-import Button from '@mui/material/Button'
-import Tooltip from '@mui/material/Tooltip'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import AttachmentIcon from '@mui/icons-material/Attachment'
+import CancelIcon from '@mui/icons-material/Cancel'
+import ChecklistIcon from '@mui/icons-material/Checklist'
+import CloseIcon from '@mui/icons-material/Close'
+import CommentIcon from '@mui/icons-material/Comment'
+import EditIcon from '@mui/icons-material/Edit'
+import GroupIcon from '@mui/icons-material/Group'
+import Groups2Icon from '@mui/icons-material/Groups2'
+import LabelIcon from '@mui/icons-material/Label'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import ScheduleIcon from '@mui/icons-material/Schedule'
+import TaskIcon from '@mui/icons-material/Task'
+import WallpaperIcon from '@mui/icons-material/Wallpaper'
 import { Card as MuiCard } from '@mui/material'
-import Typography from '@mui/material/Typography'
+import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
-import GroupIcon from '@mui/icons-material/Group'
-import CommentIcon from '@mui/icons-material/Comment'
-import AttachmentIcon from '@mui/icons-material/Attachment'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import TaskIcon from '@mui/icons-material/Task'
-import WallpaperIcon from '@mui/icons-material/Wallpaper'
-import Groups2Icon from '@mui/icons-material/Groups2'
-import LabelIcon from '@mui/icons-material/Label'
-import ChecklistIcon from '@mui/icons-material/Checklist'
-import ScheduleIcon from '@mui/icons-material/Schedule'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import Modal from '@mui/material/Modal'
+import Paper from '@mui/material/Paper'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import usePreviewImg from '~/hooks/usePreviewImg'
-import { updateCardDetailsAPI } from '~/apis'
 import { toast } from 'react-toastify'
+import { updateCardDetailsAPI } from '~/apis'
+import usePreviewImg from '~/hooks/usePreviewImg'
 
 const MODAL_STYLES = {
   position: 'absolute',
@@ -32,7 +40,7 @@ const MODAL_STYLES = {
   transform: 'translate(-50%, -50%)',
   width: { xs: '90%', sm: 560, md: 800 },
   height: { xs: '90%', sm: 600 },
-  bgcolor: 'background.paper',
+  bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#333643' : '#efefef'),
   boxShadow: 12,
   borderRadius: '8px',
   overflowY: 'scroll'
@@ -48,6 +56,18 @@ function Card({ card }) {
   const handleOpenModal = () => setOpenModal(true)
   const handleCloseModal = () => setOpenModal(false)
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg()
+  const [cardComments, setCardComments] = useState(card.comments || [])
+  const [newComment, setNewComment] = useState('')
+  const [cardTitle, setCardTitle] = useState(card.title)
+  const [openUpdateTitleForm, setOpenUpdateTitleForm] = useState(false)
+  const [cardDescription, setCardDescription] = useState(card.description || '')
+  const [openEditDescriptionForm, setOpenEditDescriptionForm] = useState(
+    !card.description
+  )
+  const toggleOpenUpdateTitleForm = () =>
+    setOpenUpdateTitleForm(!openUpdateTitleForm)
+  const toggleEditDescriptionForm = () =>
+    setOpenEditDescriptionForm(!openEditDescriptionForm)
 
   const {
     attributes,
@@ -70,18 +90,62 @@ function Card({ card }) {
   const shouldShowCardActions = () => {
     return (
       !!card?.memberIds?.length ||
-      !!card?.comments?.length ||
+      !!cardComments?.length ||
       !!card?.attachments?.length
     )
   }
 
-  const updateCardDetails = async () => {
-    if (!imgUrl) return
+  const updateCardDetails = () => {
+    if (!imgUrl) {
+      handleCloseModal()
+      return
+    }
     card.cover = imgUrl
     handleCloseModal()
-    await updateCardDetailsAPI(card._id, { cover: imgUrl })
+    updateCardDetailsAPI(card._id, { cover: imgUrl })
     setImgUrl('')
-    toast.success('Card was updated successfully!')
+  }
+
+  const updateCardTitle = () => {
+    if (!cardTitle) {
+      toast.error('Please enter a title for this card!')
+      return
+    }
+
+    if (cardTitle === card.title) {
+      toggleOpenUpdateTitleForm()
+      return
+    }
+
+    updateCardDetailsAPI(card._id, {
+      title: cardTitle
+    })
+    card.title = cardTitle
+    toggleOpenUpdateTitleForm()
+  }
+
+  const editCardDescription = () => {
+    if (!cardDescription) {
+      toast.error('Please enter a description for this card!')
+      return
+    }
+
+    updateCardDetailsAPI(card._id, {
+      description: cardDescription
+    })
+    toggleEditDescriptionForm()
+    card.description = cardDescription
+  }
+
+  const addNewComment = async () => {
+    if (!newComment) {
+      return
+    }
+    const updatedCard = await updateCardDetailsAPI(card._id, {
+      comment: { content: newComment }
+    })
+    setNewComment('')
+    setCardComments(updatedCard.comments)
   }
 
   return (
@@ -109,7 +173,7 @@ function Card({ card }) {
 
         <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography>{card?.title}</Typography>
+            <Typography>{card.title}</Typography>
             <Tooltip title="Card details">
               <MoreHorizIcon fontSize="small" onClick={handleOpenModal} />
             </Tooltip>
@@ -123,9 +187,9 @@ function Card({ card }) {
               </Button>
             )}
 
-            {!!card?.comments?.length && (
+            {!!cardComments?.length && (
               <Button size="small" startIcon={<CommentIcon />}>
-                {card?.comments?.length}
+                {cardComments?.length}
               </Button>
             )}
 
@@ -137,6 +201,8 @@ function Card({ card }) {
           </CardActions>
         )}
       </MuiCard>
+
+      {/* Card Modal */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
@@ -159,15 +225,52 @@ function Card({ card }) {
               src={imgUrl || card.cover}
             />
           )}
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            {card?.title}
-          </Typography>
+          <Box sx={{ mt: 1 }}>
+            {!openUpdateTitleForm ? (
+              <Typography
+                id="modal-modal-title"
+                variant="h6"
+                component="h2"
+                onClick={toggleOpenUpdateTitleForm}
+              >
+                {card.title}
+              </Typography>
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TextField
+                  fullWidth
+                  label="Add a comment"
+                  variant="outlined"
+                  type="text"
+                  size="small"
+                  value={cardTitle}
+                  onChange={(e) => setCardTitle(e.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  onClick={updateCardTitle}
+                >
+                  Save
+                </Button>
+                <CloseIcon
+                  onClick={toggleOpenUpdateTitleForm}
+                  fontSize="small"
+                  sx={{
+                    color: (theme) => theme.palette.warning.light,
+                    cursor: 'pointer'
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
           <Box
             sx={{
-              marginTop: 1,
+              marginTop: 2,
               display: 'flex',
               flexDirection: { xs: 'column-reverse', sm: 'row' },
-              gap: 1
+              gap: 4
             }}
           >
             <Box
@@ -176,10 +279,120 @@ function Card({ card }) {
                 flexBasis: 0
               }}
             >
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-              Cupiditate quia, similique iusto reprehenderit quidem, optio
-              rerum, assumenda sed minus deleniti laboriosam molestias harum ut
-              maiores. Porro at tempore voluptatum quis!
+              <Box>
+                <Typography sx={{ mb: 1, fontWeight: 'bold' }}>
+                  Description
+                </Typography>
+                {!card.description || openEditDescriptionForm ? (
+                  <Box>
+                    <TextField
+                      placeholder="Add a more detailed description..."
+                      fullWidth
+                      multiline
+                      rows={2}
+                      sx={{ mb: 1 }}
+                      value={cardDescription}
+                      onChange={(e) => setCardDescription(e.target.value)}
+                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        onClick={editCardDescription}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        onClick={toggleEditDescriptionForm}
+                      >
+                        Cancel
+                      </Button>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography
+                      sx={{
+                        textAlign: 'justify',
+                        wordBreak: 'break-word'
+                      }}
+                    >
+                      {card?.description}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      aria-label="edit"
+                      onClick={toggleEditDescriptionForm}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
+              <Box sx={{ mt: 3 }}>
+                <Typography sx={{ mb: 1, fontWeight: 'bold' }}>
+                  Comments
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    fullWidth
+                    label="Add a comment"
+                    variant="outlined"
+                    type="text"
+                    size="small"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    onClick={addNewComment}
+                  >
+                    Save
+                  </Button>
+                </Box>
+
+                {cardComments.length > 0 ? (
+                  cardComments.map((comment, index) => (
+                    <Paper
+                      key={index}
+                      style={{ padding: '8px 12px', marginTop: 10 }}
+                    >
+                      <Grid container wrap="nowrap" spacing={2}>
+                        <Grid item>
+                          <Avatar
+                            alt="Avatar"
+                            src={comment.userAvatar}
+                            sx={{ width: 32, height: 32 }}
+                          />
+                        </Grid>
+                        <Grid justifyContent="left" item xs zeroMinWidth>
+                          <Typography
+                            style={{ fontWeight: 'bold', textAlign: 'left' }}
+                          >
+                            {comment.userDisplayName}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              textAlign: 'justify',
+                              wordBreak: 'break-word'
+                            }}
+                          >
+                            {comment.content}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Paper>
+                  ))
+                ) : (
+                  <Typography sx={{ mt: 1 }}>No comments available</Typography>
+                )}
+              </Box>
             </Box>
             <Box
               sx={{
@@ -190,6 +403,7 @@ function Card({ card }) {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Button
                   variant="contained"
+                  color="success"
                   startIcon={<TaskIcon />}
                   sx={BUTTON_STYLES}
                   onClick={updateCardDetails}
@@ -241,6 +455,15 @@ function Card({ card }) {
                 >
                   Attachments
                   <input type="file" hidden />
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  startIcon={<CancelIcon />}
+                  sx={BUTTON_STYLES}
+                  onClick={handleCloseModal}
+                >
+                  Close
                 </Button>
               </Box>
             </Box>

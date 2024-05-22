@@ -1,26 +1,26 @@
+import Container from '@mui/material/Container'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
+import Loading from '~/components/Loading/Loading'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import Loading from '~/components/Loading/Loading'
 
 // import { mockData } from '~/apis/mock-data'
-import {
-  fetchBoardDetailsAPI,
-  updateBoardDetailsAPI,
-  createNewColumnAPI,
-  updateColumnDetailsAPI,
-  createNewCardAPI,
-  moveCardToDifferentColumnAPI,
-  deleteColumnDetailsAPI,
-  getUsersByBoardIdAPI
-} from '~/apis'
 import { isEmpty } from 'lodash'
-import { mapOrder } from '~/utils/sorts'
 import { useParams } from 'react-router-dom'
+import {
+  createNewCardAPI,
+  createNewColumnAPI,
+  deleteColumnDetailsAPI,
+  fetchBoardDetailsAPI,
+  getUsersByBoardIdAPI,
+  moveCardToDifferentColumnAPI,
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI
+} from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatters'
+import { mapOrder } from '~/utils/sorts'
 
 function Board() {
   const [board, setBoard] = useState(null)
