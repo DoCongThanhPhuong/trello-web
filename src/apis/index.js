@@ -39,10 +39,7 @@ axiosInstance.interceptors.response.use(
           toast.error(data.message || 'Unauthorized! Please log in again.')
           break
         case 403:
-          toast.error(
-            data.message ||
-              'Forbidden! You do not have permission, wait a minute to continue.'
-          )
+          toast.error(data.message || 'Forbidden! You do not have permission')
           break
         case 404:
           toast.error(data.message || 'Resource not found!')
