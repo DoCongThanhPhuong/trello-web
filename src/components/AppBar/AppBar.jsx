@@ -1,25 +1,26 @@
-import { useState } from 'react'
-import Box from '@mui/material/Box'
-import ModeSelect from '~/components/ModeSelect/ModeSelect'
 import AppsIcon from '@mui/icons-material/Apps'
-import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
+import CloseIcon from '@mui/icons-material/Close'
+import HelpOutline from '@mui/icons-material/HelpOutline'
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
+import NotificationsNone from '@mui/icons-material/NotificationsNone'
+import SearchIcon from '@mui/icons-material/Search'
+import Badge from '@mui/material/Badge'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import InputAdornment from '@mui/material/InputAdornment'
 import SvgIcon from '@mui/material/SvgIcon'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import Workspaces from './Menus/Workspaces'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
+import ModeSelect from '~/components/ModeSelect/ModeSelect'
+import Profiles from './Menus/Profiles'
 import Recent from './Menus/Recent'
 import Starred from './Menus/Starred'
 import Templates from './Menus/Templates'
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import Badge from '@mui/material/Badge'
-import NotificationsNone from '@mui/icons-material/NotificationsNone'
-import Tooltip from '@mui/material/Tooltip'
-import HelpOutline from '@mui/icons-material/HelpOutline'
-import Profiles from './Menus/Profiles'
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import InputAdornment from '@mui/material/InputAdornment'
-import SearchIcon from '@mui/icons-material/Search'
-import CloseIcon from '@mui/icons-material/Close'
+import Workspaces from './Menus/Workspaces'
 
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
@@ -45,12 +46,14 @@ function AppBar() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AppsIcon sx={{ color: 'white' }} />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <SvgIcon
-            component={TrelloIcon}
-            inheritViewBox
-            fontSize="small"
-            sx={{ color: 'white' }}
-          />
+          <Link style={{ height: '20px' }} to={'/boards'}>
+            <SvgIcon
+              component={TrelloIcon}
+              inheritViewBox
+              fontSize="small"
+              sx={{ color: 'white' }}
+            />
+          </Link>
           <Typography
             variant="span"
             sx={{

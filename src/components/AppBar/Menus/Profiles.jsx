@@ -1,24 +1,33 @@
-import React from 'react'
-import Box from '@mui/material/Box'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Divider from '@mui/material/Divider'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Avatar from '@mui/material/Avatar'
-import Tooltip from '@mui/material/Tooltip'
-import IconButton from '@mui/material/IconButton'
+import Logout from '@mui/icons-material/Logout'
 import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
-import Logout from '@mui/icons-material/Logout'
+import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
+import { useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { AuthContext } from '~/context/AuthProvider'
 
 function Profiles() {
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const {
+    user: { photoURL, displayName, auth }
+  } = useContext(AuthContext)
+
+  const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+  const handleLogout = () => {
+    auth.signOut()
   }
 
   return (
@@ -35,7 +44,7 @@ function Profiles() {
           <Avatar
             sx={{ width: 36, height: 36 }}
             alt="DoCongThanhPhuong"
-            src=""
+            src={photoURL}
           />
         </IconButton>
       </Tooltip>
@@ -48,12 +57,25 @@ function Profiles() {
           'aria-labelledby': 'basic-button-profiles'
         }}
       >
-        <MenuItem>
-          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> Profile
-        </MenuItem>
-        <MenuItem>
-          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} /> My account
-        </MenuItem>
+        <Link
+          style={{
+            textDecoration: 'none'
+          }}
+          to={'/my-profile'}
+        >
+          <MenuItem
+            sx={{
+              color: (theme) =>
+                theme.palette.mode === 'dark' ? 'white' : 'black'
+            }}
+          >
+            <Avatar
+              sx={{ width: '28px', height: '28px', mr: 2 }}
+              src={photoURL}
+            />
+            {displayName}
+          </MenuItem>
+        </Link>
         <Divider />
         <MenuItem>
           <ListItemIcon>
@@ -67,7 +89,7 @@ function Profiles() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

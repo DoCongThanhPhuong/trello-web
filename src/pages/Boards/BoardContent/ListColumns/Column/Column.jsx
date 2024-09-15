@@ -1,30 +1,57 @@
+import AddCardIcon from '@mui/icons-material/AddCard'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+import Cloud from '@mui/icons-material/Cloud'
+import ContentCopy from '@mui/icons-material/ContentCopy'
+import ContentCut from '@mui/icons-material/ContentCut'
+import ContentPaste from '@mui/icons-material/ContentPaste'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { useConfirm } from 'material-ui-confirm'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import Box from '@mui/material/Box'
-import Menu from '@mui/material/Menu'
-import Typography from '@mui/material/Typography'
-import MenuItem from '@mui/material/MenuItem'
-import Divider from '@mui/material/Divider'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ContentCut from '@mui/icons-material/ContentCut'
-import ContentCopy from '@mui/icons-material/ContentCopy'
-import ContentPaste from '@mui/icons-material/ContentPaste'
-import AddCardIcon from '@mui/icons-material/AddCard'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import Cloud from '@mui/icons-material/Cloud'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import DragHandleIcon from '@mui/icons-material/DragHandle'
-import Tooltip from '@mui/material/Tooltip'
-import Button from '@mui/material/Button'
 import ListCards from './ListCards/ListCards'
-import TextField from '@mui/material/TextField'
-import CloseIcon from '@mui/icons-material/Close'
-import CheckIcon from '@mui/icons-material/Check'
-import { useConfirm } from 'material-ui-confirm'
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+
+const INPUT_STYLES = {
+  '& label': { color: 'text.primary' },
+  '& input': {
+    color: (theme) => theme.palette.primary.main,
+    bgcolor: (theme) => {
+      theme.palette.mode === 'dark' ? '#333643' : 'white'
+    }
+  },
+  '& label.Mui-focused': {
+    color: (theme) => theme.palette.primary.main
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: (theme) => theme.palette.primary.main
+    },
+    '&:hover fieldset': {
+      borderColor: (theme) => theme.palette.primary.main
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: (theme) => theme.palette.primary.main
+    }
+  },
+  '& .MuiOutlinedInput-input': {
+    borderRadius: 1
+  }
+}
 
 function Column({
   column,
@@ -32,33 +59,6 @@ function Column({
   deleteColumnDetails,
   updateColumnTitle
 }) {
-  const INPUT_STYLES = {
-    '& label': { color: 'text.primary' },
-    '& input': {
-      color: (theme) => theme.palette.primary.main,
-      bgcolor: (theme) => {
-        theme.palette.mode === 'dark' ? '#333643' : 'white'
-      }
-    },
-    '& label.Mui-focused': {
-      color: (theme) => theme.palette.primary.main
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: (theme) => theme.palette.primary.main
-      },
-      '&:hover fieldset': {
-        borderColor: (theme) => theme.palette.primary.main
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: (theme) => theme.palette.primary.main
-      }
-    },
-    '& .MuiOutlinedInput-input': {
-      borderRadius: 1
-    }
-  }
-
   const {
     attributes,
     listeners,
@@ -119,7 +119,7 @@ function Column({
   const toggleOpenColumnTitleForm = () =>
     setOpenColumnTitleForm(!openColumnTitleForm)
 
-  const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState('')
+  const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState(column.title)
 
   const updateNewColumnTitle = () => {
     if (!newUpdateColumnTitle) {
@@ -127,11 +127,17 @@ function Column({
       return
     }
 
+    // Nếu title mới trùng với title cũ thì không làm gì cả
+    if (newUpdateColumnTitle === column.title) {
+      toggleOpenColumnTitleForm()
+      return
+    }
+
     updateColumnTitle(column._id, newUpdateColumnTitle)
 
     // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenColumnTitleForm()
-    setNewUpdateColumnTitle('')
+    setNewUpdateColumnTitle(column.title)
   }
 
   // Xử lý xóa một Column và Cards bên trong nó
@@ -295,7 +301,7 @@ function Column({
               }}
             >
               <TextField
-                label="Enter card title..."
+                label="Enter column title..."
                 type="text"
                 size="small"
                 variant="outlined"

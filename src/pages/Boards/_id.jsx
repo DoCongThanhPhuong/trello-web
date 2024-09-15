@@ -1,32 +1,35 @@
+import Container from '@mui/material/Container'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
+import Loading from '~/components/Loading/Loading'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import { mapOrder } from '~/utils/sorts'
 
 // import { mockData } from '~/apis/mock-data'
+import { isEmpty } from 'lodash'
+import { useParams } from 'react-router-dom'
 import {
-  fetchBoardDetailsAPI,
-  updateBoardDetailsAPI,
-  createNewColumnAPI,
-  updateColumnDetailsAPI,
   createNewCardAPI,
+  createNewColumnAPI,
+  deleteColumnDetailsAPI,
+  fetchBoardDetailsAPI,
+  getBoardMembersAPI,
   moveCardToDifferentColumnAPI,
-  deleteColumnDetailsAPI
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI
 } from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatters'
-import { isEmpty } from 'lodash'
-import { Box, Typography } from '@mui/material'
-import CircularProgress from '@mui/material/CircularProgress'
+import { mapOrder } from '~/utils/sorts'
 
 function Board() {
   const [board, setBoard] = useState(null)
+  const [members, setMembers] = useState([])
+  const param = useParams()
 
   useEffect(() => {
-    // Tạm thời fix cứng boardId, về sau sử dụng react-router-dom để lấy boarId chuẩn từ URL về
-    const boardId = '65fabae5b7d812b159b77124'
+    // Sử dụng react-router-dom để lấy boarId chuẩn từ URL về
+    const boardId = param?.id
     // Call API
     fetchBoardDetailsAPI(boardId).then((board) => {
       // Sắp xếp thứ tự các Columns ở đây trước khi đưa dữ liệu xuống bên dưới các components con
@@ -43,8 +46,12 @@ function Board() {
         }
       })
       setBoard(board)
+
+      getBoardMembersAPI(board._id).then((members) => {
+        setMembers(members)
+      })
     })
-  }, [])
+  }, [param?.id])
 
   // Func này có nhiệm vụ gọi API tạo mới Column và làm mới dữ liệu State Board
   const createNewColumn = async (newColumnData) => {
@@ -198,27 +205,13 @@ function Board() {
   }
 
   if (!board) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 2,
-          width: '100vw',
-          height: '100vh'
-        }}
-      >
-        <CircularProgress />
-        <Typography>Loading Board...</Typography>
-      </Box>
-    )
+    return <Loading />
   }
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <AppBar />
-      <BoardBar board={board} />
+      <BoardBar board={board} members={members} />
       <BoardContent
         board={board}
         createNewColumn={createNewColumn}
