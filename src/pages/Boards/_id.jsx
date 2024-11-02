@@ -1,57 +1,36 @@
 import Container from '@mui/material/Container'
-import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import AppBar from '~/components/AppBar/AppBar'
-import Loading from '~/components/Loading/Loading'
-import BoardBar from './BoardBar/BoardBar'
-import BoardContent from './BoardContent/BoardContent'
-
-// import { mockData } from '~/apis/mock-data'
-import { isEmpty } from 'lodash'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
   createNewCardAPI,
   createNewColumnAPI,
   deleteColumnDetailsAPI,
-  fetchBoardDetailsAPI,
-  getBoardMembersAPI,
   moveCardToDifferentColumnAPI,
   updateBoardDetailsAPI,
   updateColumnDetailsAPI
 } from '~/apis'
+import AppBar from '~/components/AppBar/AppBar'
+import Loading from '~/components/Loading/Loading'
+import {
+  fetchBoardDetailsAPI,
+  selectCurrentActiveBoard,
+  updateCurrentActiveBoard
+} from '~/redux/activeBoard/activeBoardSlice'
 import { generatePlaceholderCard } from '~/utils/formatters'
-import { mapOrder } from '~/utils/sorts'
+import BoardBar from './BoardBar/BoardBar'
+import BoardContent from './BoardContent/BoardContent'
 
 function Board() {
-  const [board, setBoard] = useState(null)
-  const [members, setMembers] = useState([])
+  const dispatch = useDispatch()
+  const board = useSelector(selectCurrentActiveBoard)
   const param = useParams()
 
   useEffect(() => {
-    // Sử dụng react-router-dom để lấy boarId chuẩn từ URL về
-    const boardId = param?.id
-    // Call API
-    fetchBoardDetailsAPI(boardId).then((board) => {
-      // Sắp xếp thứ tự các Columns ở đây trước khi đưa dữ liệu xuống bên dưới các components con
-      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
-
-      board.columns.forEach((column) => {
-        // Xử lý vấn đề kéo thả cho các column rỗng
-        if (isEmpty(column.cards)) {
-          column.cards = [generatePlaceholderCard(column)]
-          column.cardOrderIds = [generatePlaceholderCard(column)._id]
-        } else {
-          // Sắp xếp thứ tự các Cards ở đây trước khi đưa dữ liệu xuống bên dưới các components con
-          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
-        }
-      })
-      setBoard(board)
-
-      getBoardMembersAPI(board._id).then((members) => {
-        setMembers(members)
-      })
-    })
-  }, [param?.id])
+    const { id: boardId } = param
+    dispatch(fetchBoardDetailsAPI(boardId))
+  }, [dispatch, param])
 
   // Func này có nhiệm vụ gọi API tạo mới Column và làm mới dữ liệu State Board
   const createNewColumn = async (newColumnData) => {
@@ -68,7 +47,7 @@ function Board() {
     const newBoard = { ...board }
     newBoard.columns.push(createdColumn)
     newBoard.columnOrderIds.push(createdColumn._id)
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
   }
 
   // Func này có nhiệm vụ gọi API tạo mới Card và làm mới dữ liệu State Board
@@ -92,7 +71,7 @@ function Board() {
         columnToUpdate.cardOrderIds.push(createdCard._id)
       }
     }
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
   }
 
   /** Func này có nhiệm vụ gọi API và xử lý sau khi kéo thả Columns
@@ -104,7 +83,7 @@ function Board() {
     const newBoard = { ...board }
     newBoard.columns = dndOrderedColumns
     newBoard.columnOrderIds = dndOrderedColumnIds
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API cập nhật Board
     updateBoardDetailsAPI(newBoard._id, {
@@ -129,7 +108,7 @@ function Board() {
       columnToUpdate.cards = dndOrderedCards
       columnToUpdate.cardOrderIds = dndOrderedCardIds
     }
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API cập nhật Column
     updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardIds })
@@ -152,7 +131,7 @@ function Board() {
     const newBoard = { ...board }
     newBoard.columns = dndOrderedColumns
     newBoard.columnOrderIds = dndOrderedColumnIds
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API xử lý phía BE
     let prevCardOrderIds = dndOrderedColumns.find(
@@ -180,7 +159,7 @@ function Board() {
     newBoard.columnOrderIds = newBoard.columnOrderIds.filter(
       (_id) => _id !== columnId
     )
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API xử lý phía BE
     deleteColumnDetailsAPI(columnId).then((res) => {
@@ -198,7 +177,7 @@ function Board() {
     if (columnToUpdate) {
       columnToUpdate.title = newTitle
     }
-    setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API xử lý phía BE
     updateColumnDetailsAPI(columnId, { title: newTitle })
@@ -211,7 +190,7 @@ function Board() {
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <AppBar />
-      <BoardBar board={board} members={members} />
+      <BoardBar board={board} />
       <BoardContent
         board={board}
         createNewColumn={createNewColumn}

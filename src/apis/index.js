@@ -7,12 +7,6 @@ export const getBoardsByUserIdAPI = async () => {
   return response.data
 }
 
-export const fetchBoardDetailsAPI = async (boardId) => {
-  const response = await axiosInstance.get(`${API_ROOT}/v1/boards/${boardId}`)
-  // Lưu ý: axios sẽ trả kết quả về qua property của nó là data
-  return response.data
-}
-
 export const updateBoardDetailsAPI = async (boardId, updateData) => {
   const response = await axiosInstance.put(
     `${API_ROOT}/v1/boards/${boardId}`,

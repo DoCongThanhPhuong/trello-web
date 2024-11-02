@@ -108,7 +108,7 @@ function BoardBar({ board, members }) {
             }
           }}
         >
-          {members.map((member) => (
+          {members?.map((member) => (
             <Tooltip key={member._id} title={member.displayName}>
               <Avatar alt={member.displayName} src={member.avatar} />
             </Tooltip>
