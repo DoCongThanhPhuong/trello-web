@@ -1,3 +1,5 @@
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import AddCardIcon from '@mui/icons-material/AddCard'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
@@ -18,13 +20,21 @@ import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { cloneDeep } from 'lodash'
 import { useConfirm } from 'material-ui-confirm'
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
+import {
+  createNewCardAPI,
+  deleteColumnDetailsAPI,
+  updateColumnDetailsAPI
+} from '~/apis'
+import {
+  selectCurrentActiveBoard,
+  updateCurrentActiveBoard
+} from '~/redux/activeBoard/activeBoardSlice'
 import ListCards from './ListCards/ListCards'
-
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 
 const INPUT_STYLES = {
   '& label': { color: 'text.primary' },
@@ -53,12 +63,9 @@ const INPUT_STYLES = {
   }
 }
 
-function Column({
-  column,
-  createNewCard,
-  deleteColumnDetails,
-  updateColumnTitle
-}) {
+function Column({ column }) {
+  const dispatch = useDispatch()
+  const board = useSelector(selectCurrentActiveBoard)
   const {
     attributes,
     listeners,
@@ -67,7 +74,6 @@ function Column({
     transition,
     isDragging
   } = useSortable({ id: column._id, data: { ...column } })
-
   const dndKitColumnStyles = {
     // touchAction: 'none', // Dành cho sensor default dạng Pointer Sensor
     // Nếu sử dụng CSS.Tranform như doc thì sẽ bị lỗi kiểu stretch
@@ -76,7 +82,6 @@ function Column({
     height: '100%',
     opacity: isDragging ? 0.5 : undefined
   }
-
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -85,16 +90,13 @@ function Column({
   const handleClose = () => {
     setAnchorEl(null)
   }
-
   // Cards đã được sắp xếp ở component cha cao nhất
   const orderedCards = column.cards
 
   const [openNewCardForm, setOpenNewCardForm] = useState(false)
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
-
   const [newCardTitle, setNewCardTitle] = useState('')
-
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle) {
       toast.error('Please enter a title for this card!', {
         position: 'bottom-right'
@@ -108,7 +110,25 @@ function Column({
       columnId: column._id
     }
 
-    createNewCard(newCardData)
+    const createdCard = await createNewCardAPI({
+      ...newCardData,
+      boardId: board._id
+    })
+
+    const newBoard = cloneDeep(board)
+    const columnToUpdate = newBoard.columns.find(
+      (column) => column._id === createdCard.columnId
+    )
+    if (columnToUpdate) {
+      if (columnToUpdate.cards.some((card) => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard]
+        columnToUpdate.cardOrderIds[createdCard._id]
+      } else {
+        columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
+      }
+    }
+    dispatch(updateCurrentActiveBoard(newBoard))
 
     // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenNewCardForm()
@@ -118,9 +138,7 @@ function Column({
   const [openColumnTitleForm, setOpenColumnTitleForm] = useState(false)
   const toggleOpenColumnTitleForm = () =>
     setOpenColumnTitleForm(!openColumnTitleForm)
-
   const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState(column.title)
-
   const updateNewColumnTitle = () => {
     if (!newUpdateColumnTitle) {
       toast.error('Please enter a title for this column!')
@@ -133,16 +151,26 @@ function Column({
       return
     }
 
-    updateColumnTitle(column._id, newUpdateColumnTitle)
+    const columnId = column._id
+    const newBoard = cloneDeep(board)
+    const columnToUpdate = newBoard.columns.find(
+      (column) => column._id === columnId
+    )
+    if (columnToUpdate) {
+      columnToUpdate.title = newUpdateColumnTitle
+    }
+    dispatch(updateCurrentActiveBoard(newBoard))
+
+    // Gọi API xử lý phía BE
+    updateColumnDetailsAPI(columnId, { title: newUpdateColumnTitle })
 
     // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenColumnTitleForm()
-    setNewUpdateColumnTitle(column.title)
+    setNewUpdateColumnTitle(newUpdateColumnTitle)
   }
 
   // Xử lý xóa một Column và Cards bên trong nó
   const confirmDeleteColumn = useConfirm()
-
   const handleDeleteColumn = () => {
     confirmDeleteColumn({
       title: 'Delete this Column?',
@@ -150,16 +178,19 @@ function Column({
       description: `Are you sure you want to delete this column? Type ${column.title} to confirm your action`,
       confirmationText: 'Confirm',
       cancellationText: 'Cancel'
-      // description:
-      //   'This action will permanently delete this column and its cards! Are you sure?',
-      // allowClose: false,
-      // dialogProps: { maxWidth: 'xs' },
-      // confirmationButtonProps: { color: 'primary' },
-      // cancellationButtonProps: { color: 'inherit' }
-      // buttonOrder: ['confirm', 'cancel']
     })
       .then(() => {
-        deleteColumnDetails(column._id)
+        const newBoard = { ...board }
+        newBoard.columns = newBoard.columns.filter((c) => c._id !== column._id)
+        newBoard.columnOrderIds = newBoard.columnOrderIds.filter(
+          (_id) => _id !== column._id
+        )
+        dispatch(updateCurrentActiveBoard(newBoard))
+
+        // Gọi API xử lý phía BE
+        deleteColumnDetailsAPI(column._id).then((res) => {
+          toast.success(res?.deleteResult)
+        })
       })
       .catch(() => {})
   }
@@ -320,8 +351,6 @@ function Column({
                   size="small"
                   sx={{
                     boxShadow: 'none',
-                    // border: '1px solid',
-                    // borderColor: (theme) => theme.palette.success.main,
                     '&:hover': {
                       bgcolor: (theme) => theme.palette.success.main
                     }
@@ -401,8 +430,6 @@ function Column({
                   size="small"
                   sx={{
                     boxShadow: 'none',
-                    // border: '1px solid',
-                    // borderColor: (theme) => theme.palette.success.main,
                     '&:hover': {
                       bgcolor: (theme) => theme.palette.success.main
                     }
