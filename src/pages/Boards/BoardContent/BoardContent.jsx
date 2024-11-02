@@ -33,13 +33,9 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 function BoardContent({
   board,
-  createNewColumn,
-  createNewCard,
   moveColumns,
   moveCardInTheSameColumn,
-  moveCardToDifferentColumn,
-  deleteColumnDetails,
-  updateColumnTitle
+  moveCardToDifferentColumn
 }) {
   // const pointerSensor = useSensor(PointerSensor, {
   //   activationConstraint: { distance: 10 }
@@ -425,7 +421,6 @@ function BoardContent({
       sensors={sensors}
       // Thuật toán phát hiện va chạm nếu không có thì card lớn sẽ không kéo qua column được
       // collisionDetection={closestCorners}
-
       // Custom nâng cao thuật toán phát hiện va chạm do sử dụng closestCorners có bug flickering và gây sai lệch dữ liệu
       collisionDetection={collisionDetectionStrategy}
       onDragStart={handleDragStart}
@@ -441,13 +436,7 @@ function BoardContent({
           p: '10px 0'
         }}
       >
-        <ListColumns
-          columns={orderedColumns}
-          createNewColumn={createNewColumn}
-          createNewCard={createNewCard}
-          deleteColumnDetails={deleteColumnDetails}
-          updateColumnTitle={updateColumnTitle}
-        />
+        <ListColumns columns={orderedColumns} />
         <DragOverlay dropAnimation={dropAnimation}>
           {!activeDragItemType && null}
 
