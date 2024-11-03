@@ -9,15 +9,10 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AuthContext } from '~/context/AuthProvider'
 
 function Profiles() {
-  const {
-    user: { photoURL, displayName, auth }
-  } = useContext(AuthContext)
-
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -25,9 +20,6 @@ function Profiles() {
   }
   const handleClose = () => {
     setAnchorEl(null)
-  }
-  const handleLogout = () => {
-    auth.signOut()
   }
 
   return (
@@ -41,11 +33,7 @@ function Profiles() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar
-            sx={{ width: 36, height: 36 }}
-            alt="DoCongThanhPhuong"
-            src={photoURL}
-          />
+          <Avatar sx={{ width: 36, height: 36 }} alt="DoCongThanhPhuong" />
         </IconButton>
       </Tooltip>
       <Menu
@@ -69,11 +57,7 @@ function Profiles() {
                 theme.palette.mode === 'dark' ? 'white' : 'black'
             }}
           >
-            <Avatar
-              sx={{ width: '28px', height: '28px', mr: 2 }}
-              src={photoURL}
-            />
-            {displayName}
+            <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} />
           </MenuItem>
         </Link>
         <Divider />
@@ -89,7 +73,7 @@ function Profiles() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleLogout}>
+        <MenuItem>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

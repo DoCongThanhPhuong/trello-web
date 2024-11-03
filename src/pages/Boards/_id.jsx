@@ -21,12 +21,11 @@ import BoardContent from './BoardContent/BoardContent'
 function Board() {
   const dispatch = useDispatch()
   const board = useSelector(selectCurrentActiveBoard)
-  const param = useParams()
+  const { boardId } = useParams()
 
   useEffect(() => {
-    const { id: boardId } = param
     dispatch(fetchBoardDetailsAPI(boardId))
-  }, [dispatch, param])
+  }, [boardId, dispatch])
 
   /** Func này có nhiệm vụ gọi API và xử lý sau khi kéo thả Columns
    * Chỉ cần gọi API để cập nhật mảng columnOrderIds trong Boards chứa nó

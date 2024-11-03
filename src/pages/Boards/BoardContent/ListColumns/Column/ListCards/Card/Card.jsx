@@ -1,21 +1,16 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import AttachmentIcon from '@mui/icons-material/Attachment'
+import CommentIcon from '@mui/icons-material/Comment'
+import GroupIcon from '@mui/icons-material/Group'
 import { Card as MuiCard } from '@mui/material'
-import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-import Tooltip from '@mui/material/Tooltip'
+import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
-import CardActionsComponent from '~/components/Card/CardActions'
-import CardCover from '~/components/Card/CardCover'
-import CardModal from '~/components/Card/CardModal'
 
 function Card({ card }) {
-  const [openModal, setOpenModal] = useState(false)
-  const handleOpenModal = () => setOpenModal(true)
-  const handleCloseModal = () => setOpenModal(false)
-
   const {
     attributes,
     listeners,
@@ -32,43 +27,55 @@ function Card({ card }) {
     border: isDragging ? '1px solid #16a085' : undefined
   }
 
+  const shouldShowCardActions = () => {
+    return (
+      !!card?.memberIds?.length ||
+      !!card?.comments?.length ||
+      !!card?.attachments?.length
+    )
+  }
+
   return (
-    <>
-      <MuiCard
-        ref={setNodeRef}
-        style={dndKitCardStyles}
-        {...attributes}
-        {...listeners}
-        sx={{
-          cursor: 'pointer',
-          boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
-          overflow: 'unset',
-          display: card?.FE_PlaceholderCard ? 'none' : 'block',
-          border: '1px solid transparent',
-          '&:hover': { borderColor: (theme) => theme.palette.primary.main }
-        }}
-      >
-        <CardCover cover={card.cover} />
-        <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography>{card.title}</Typography>
-            <Tooltip title="Card details">
-              <MoreHorizIcon fontSize="small" onClick={handleOpenModal} />
-            </Tooltip>
-          </Box>
-        </CardContent>
-        <CardActionsComponent
-          memberIds={card.memberIds}
-          comments={card.comments}
-          attachments={card.attachments}
-        />
-      </MuiCard>
-      <CardModal
-        card={card}
-        openModal={openModal}
-        handleCloseModal={handleCloseModal}
-      />
-    </>
+    <MuiCard
+      ref={setNodeRef}
+      style={dndKitCardStyles}
+      {...attributes}
+      {...listeners}
+      sx={{
+        cursor: 'pointer',
+        boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
+        overflow: 'unset',
+        display: card?.FE_PlaceholderCard ? 'none' : 'block',
+        border: '1px solid transparent',
+        '&:hover': { borderColor: (theme) => theme.palette.primary.main }
+        // overflow: card?.FE_PlaceholderCard ? 'hidden' : 'unset',
+        // height: card?.FE_PlaceholderCard ? '0px' : 'unset'
+      }}
+    >
+      {card?.cover && <CardMedia sx={{ height: 140 }} image={card?.cover} />}
+      <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+        <Typography>{card?.title}</Typography>
+      </CardContent>
+      {shouldShowCardActions() && (
+        <CardActions sx={{ p: '0 4px 8px 4px' }}>
+          {!!card?.memberIds?.length && (
+            <Button size="small" startIcon={<GroupIcon />}>
+              {card?.memberIds?.length}
+            </Button>
+          )}
+          {!!card?.comments?.length && (
+            <Button size="small" startIcon={<CommentIcon />}>
+              {card?.comments?.length}
+            </Button>
+          )}
+          {!!card?.attachments?.length && (
+            <Button size="small" startIcon={<AttachmentIcon />}>
+              {card?.attachments?.length}
+            </Button>
+          )}
+        </CardActions>
+      )}
+    </MuiCard>
   )
 }
 

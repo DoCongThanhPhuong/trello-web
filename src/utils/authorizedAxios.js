@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { getAuth } from 'firebase/auth'
 import { toast } from 'react-toastify'
 
 const axiosInstance = axios.create()
@@ -31,24 +30,24 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config
     if (error.response?.status === 410 && originalRequest) {
       if (!refreshTokenPromise) {
-        const auth = getAuth()
-        const user = auth.currentUser
-        if (user) {
-          refreshTokenPromise = user
-            .getIdToken(true)
-            .then((newToken) => {
-              localStorage.setItem('accessToken', newToken)
-              axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`
-            })
-            .catch((err) => {
-              return Promise.reject(err)
-            })
-            .finally(() => {
-              refreshTokenPromise = null
-            })
-        } else {
-          return Promise.reject(new Error('User not logged in'))
-        }
+        // const auth = getAuth()
+        // const user = auth.currentUser
+        // if (user) {
+        //   refreshTokenPromise = user
+        //     .getIdToken(true)
+        //     .then((newToken) => {
+        //       localStorage.setItem('accessToken', newToken)
+        //       axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`
+        //     })
+        //     .catch((err) => {
+        //       return Promise.reject(err)
+        //     })
+        //     .finally(() => {
+        //       refreshTokenPromise = null
+        //     })
+        // } else {
+        //   return Promise.reject(new Error('User not logged in'))
+        // }
       }
 
       return refreshTokenPromise.then(() => {
