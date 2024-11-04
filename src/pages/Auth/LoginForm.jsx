@@ -8,9 +8,12 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { loginUserAPI } from '~/redux/user/userSlice'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
@@ -20,6 +23,8 @@ import {
 } from '~/utils/validators'
 
 function LoginForm() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -31,7 +36,15 @@ function LoginForm() {
   const verifiedEmail = searchParams.get('verifiedEmail')
 
   const submitLogIn = (data) => {
-    const { email, password } = data
+    toast
+      .promise(dispatch(loginUserAPI(data)), {
+        pending: 'Logging in...'
+      })
+      .then((res) => {
+        if (!res.error) {
+          navigate('/')
+        }
+      })
   }
 
   return (
