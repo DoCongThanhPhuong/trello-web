@@ -99,7 +99,7 @@ function Board() {
   }
 
   if (!board) {
-    return <Loading />
+    return <Loading caption="Loading Board..." />
   }
 
   return (

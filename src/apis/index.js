@@ -1,4 +1,5 @@
-import axiosInstance from '~/utils/authorizedAxios'
+import { toast } from 'react-toastify'
+import axiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
 // Boards
@@ -8,7 +9,7 @@ export const getBoardsByUserIdAPI = async () => {
 }
 
 export const updateBoardDetailsAPI = async (boardId, updateData) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.patch(
     `${API_ROOT}/v1/boards/${boardId}`,
     updateData
   )
@@ -16,7 +17,7 @@ export const updateBoardDetailsAPI = async (boardId, updateData) => {
 }
 
 export const moveCardToDifferentColumnAPI = async (updateData) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.patch(
     `${API_ROOT}/v1/boards/supports/moving_card`,
     updateData
   )
@@ -41,7 +42,7 @@ export const createNewColumnAPI = async (newColumnData) => {
 }
 
 export const updateColumnDetailsAPI = async (columnId, updateData) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.patch(
     `${API_ROOT}/v1/columns/${columnId}`,
     updateData
   )
@@ -62,7 +63,7 @@ export const createNewCardAPI = async (newCardData) => {
 }
 
 export const updateCardDetailsAPI = async (cardId, updateData) => {
-  const response = await axiosInstance.put(
+  const response = await axiosInstance.patch(
     `${API_ROOT}/v1/cards/${cardId}`,
     updateData
   )
@@ -70,22 +71,20 @@ export const updateCardDetailsAPI = async (cardId, updateData) => {
 }
 
 // Users
-export const loginAPI = async (userData) => {
+export const registerUserAPI = async (data) => {
   const response = await axiosInstance.post(
-    `${API_ROOT}/v1/users/login`,
-    userData
+    `${API_ROOT}/v1/users/register`,
+    data
   )
+  toast.success('Account registered successfully!', { theme: 'colored' })
   return response.data
 }
 
-export const getBoardMembersAPI = async (boardId) => {
-  const response = await axiosInstance.get(
-    `${API_ROOT}/v1/users/members/${boardId}`
+export const verifyUserAPI = async (data) => {
+  const response = await axiosInstance.patch(
+    `${API_ROOT}/v1/users/verify`,
+    data
   )
-  return response.data
-}
-
-export const getProfileAPI = async () => {
-  const response = await axiosInstance.get(`${API_ROOT}/v1/users/profile`)
+  toast.success('Account verified successfully!', { theme: 'colored' })
   return response.data
 }

@@ -130,7 +130,6 @@ function Column({ column }) {
     }
     dispatch(updateCurrentActiveBoard(newBoard))
 
-    // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenNewCardForm()
     setNewCardTitle('')
   }
@@ -139,7 +138,7 @@ function Column({ column }) {
   const toggleOpenColumnTitleForm = () =>
     setOpenColumnTitleForm(!openColumnTitleForm)
   const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState(column.title)
-  const updateNewColumnTitle = () => {
+  const updateNewColumnTitle = async () => {
     if (!newUpdateColumnTitle) {
       toast.error('Please enter a title for this column!')
       return
@@ -162,7 +161,7 @@ function Column({ column }) {
     dispatch(updateCurrentActiveBoard(newBoard))
 
     // Gọi API xử lý phía BE
-    updateColumnDetailsAPI(columnId, { title: newUpdateColumnTitle })
+    await updateColumnDetailsAPI(columnId, { title: newUpdateColumnTitle })
 
     // Đóng trạng thái thêm Card mới & Clear Input
     toggleOpenColumnTitleForm()
@@ -345,6 +344,7 @@ function Column({ column }) {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
                   data-no-dnd="true"
+                  className="interceptor-loading"
                   onClick={updateNewColumnTitle}
                   variant="contained"
                   color="success"
@@ -424,6 +424,7 @@ function Column({ column }) {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
                   data-no-dnd="true"
+                  className="interceptor-loading"
                   onClick={addNewCard}
                   variant="contained"
                   color="success"

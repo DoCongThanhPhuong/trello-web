@@ -1,17 +1,18 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { interceptorLoadingElements } from './formatters'
 
 const axiosInstance = axios.create()
-
 axiosInstance.defaults.timeout = 1000 * 60 * 10
 axiosInstance.defaults.withCredentials = true
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem('accessToken')
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`
-    }
+    // const accessToken = localStorage.getItem('accessToken')
+    // if (accessToken) {
+    //   config.headers.Authorization = `Bearer ${accessToken}`
+    // }
+    interceptorLoadingElements(true)
 
     return config
   },
@@ -21,9 +22,9 @@ axiosInstance.interceptors.request.use(
 )
 
 let refreshTokenPromise = null
-
 axiosInstance.interceptors.response.use(
   (response) => {
+    interceptorLoadingElements(false)
     return response
   },
   (error) => {
@@ -54,6 +55,8 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest)
       })
     }
+
+    interceptorLoadingElements(false)
 
     if (error.response?.status !== 410) {
       toast.error(error.response?.data?.message || error?.message)

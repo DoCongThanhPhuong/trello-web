@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 
-function Loading() {
+function Loading({ caption = 'Loading...' }) {
   return (
     <Box
       sx={{
@@ -26,7 +26,7 @@ function Loading() {
           color: 'white'
         }}
       >
-        Loading...
+        {caption}
       </Typography>
     </Box>
   )

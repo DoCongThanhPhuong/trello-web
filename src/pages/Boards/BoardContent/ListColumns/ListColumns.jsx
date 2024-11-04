@@ -125,7 +125,7 @@ function ListColumns({ columns }) {
             }}
           >
             <TextField
-              label="Enter list title..."
+              label="Enter column title..."
               type="text"
               size="small"
               variant="outlined"
@@ -151,14 +151,13 @@ function ListColumns({ columns }) {
             />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Button
+                className="interceptor-loading"
                 onClick={addNewColumn}
                 variant="contained"
                 color="success"
                 size="small"
                 sx={{
                   boxShadow: 'none',
-                  // border: '1px solid',
-                  // borderColor: (theme) => theme.palette.success.main,
                   '&:hover': { bgcolor: (theme) => theme.palette.success.main }
                 }}
               >
