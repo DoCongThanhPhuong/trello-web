@@ -11,8 +11,12 @@ import store from './redux/store'
 import { BrowserRouter } from 'react-router-dom'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
+import { injectStore } from './utils/authorizedAxios'
 
 const persistor = persistStore(store)
+
+// Inject Store
+injectStore(store)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter basename="/">
@@ -24,7 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               allowClose: false,
               dialogProps: { maxWidth: 'xs' },
               confirmationButtonProps: { color: 'primary' },
-              cancellationButtonProps: { color: 'inherit' }
+              cancellationButtonProps: { color: 'error' }
             }}
           >
             <CssBaseline />

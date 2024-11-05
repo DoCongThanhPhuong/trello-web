@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify'
-import axiosInstance from '~/utils/authorizeAxios'
+import axiosInstance from '~/utils/authorizedAxios'
 import { API_ROOT } from '~/utils/constants'
 
 // Boards
@@ -86,5 +86,10 @@ export const verifyUserAPI = async (data) => {
     data
   )
   toast.success('Account verified successfully!', { theme: 'colored' })
+  return response.data
+}
+
+export const refreshTokenAPI = async () => {
+  const response = await axiosInstance.get(`${API_ROOT}/v1/users/refresh_token`)
   return response.data
 }

@@ -1,6 +1,13 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from './formatters'
+import { logoutUserAPI } from '~/redux/user/userSlice'
+import { refreshTokenAPI } from '~/apis'
+
+let axiosReduxStore
+export const injectStore = (mainStore) => {
+  axiosReduxStore = mainStore
+}
 
 const axiosInstance = axios.create()
 axiosInstance.defaults.timeout = 1000 * 60 * 10
@@ -8,12 +15,7 @@ axiosInstance.defaults.withCredentials = true
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // const accessToken = localStorage.getItem('accessToken')
-    // if (accessToken) {
-    //   config.headers.Authorization = `Bearer ${accessToken}`
-    // }
     interceptorLoadingElements(true)
-
     return config
   },
   (error) => {
@@ -28,35 +30,32 @@ axiosInstance.interceptors.response.use(
     return response
   },
   (error) => {
+    interceptorLoadingElements(false)
+
+    if (error.response?.status === 401) {
+      axiosReduxStore.dispatch(logoutUserAPI())
+    }
+
     const originalRequest = error.config
     if (error.response?.status === 410 && originalRequest) {
       if (!refreshTokenPromise) {
-        // const auth = getAuth()
-        // const user = auth.currentUser
-        // if (user) {
-        //   refreshTokenPromise = user
-        //     .getIdToken(true)
-        //     .then((newToken) => {
-        //       localStorage.setItem('accessToken', newToken)
-        //       axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`
-        //     })
-        //     .catch((err) => {
-        //       return Promise.reject(err)
-        //     })
-        //     .finally(() => {
-        //       refreshTokenPromise = null
-        //     })
-        // } else {
-        //   return Promise.reject(new Error('User not logged in'))
-        // }
+        refreshTokenPromise = refreshTokenAPI()
+          .then((data) => {
+            return data?.accessToken
+          })
+          .catch((_error) => {
+            axiosReduxStore.dispatch(logoutUserAPI())
+            return Promise.reject(_error)
+          })
+          .finally(() => {
+            refreshTokenPromise = null
+          })
       }
 
       return refreshTokenPromise.then(() => {
         return axiosInstance(originalRequest)
       })
     }
-
-    interceptorLoadingElements(false)
 
     if (error.response?.status !== 410) {
       toast.error(error.response?.data?.message || error?.message)
