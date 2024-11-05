@@ -45,26 +45,26 @@ function AppBar() {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AppsIcon sx={{ color: 'white' }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Link style={{ height: '20px' }} to={'/boards'}>
+        <Link to="/">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <SvgIcon
               component={TrelloIcon}
               inheritViewBox
               fontSize="small"
               sx={{ color: 'white' }}
             />
-          </Link>
-          <Typography
-            variant="span"
-            sx={{
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              color: 'white'
-            }}
-          >
-            Trello
-          </Typography>
-        </Box>
+            <Typography
+              variant="span"
+              sx={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: 'white'
+              }}
+            >
+              Trello
+            </Typography>
+          </Box>
+        </Link>
 
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           <Workspaces />

@@ -1,4 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline'
+import GlobalStyles from '@mui/material/GlobalStyles'
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
 import { ConfirmProvider } from 'material-ui-confirm'
 import ReactDOM from 'react-dom/client'
@@ -31,6 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               cancellationButtonProps: { color: 'error' }
             }}
           >
+            <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
             <CssBaseline />
             <App />
             <ToastContainer position="bottom-left" theme="colored" />
