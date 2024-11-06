@@ -3,8 +3,8 @@ import axiosInstance from '~/utils/authorizedAxios'
 import { API_ROOT } from '~/utils/constants'
 
 // Boards
-export const getBoardsByUserIdAPI = async () => {
-  const response = await axiosInstance.get(`${API_ROOT}/v1/boards`)
+export const listUserBoardsAPI = async (query) => {
+  const response = await axiosInstance.get(`${API_ROOT}/v1/boards${query}`)
   return response.data
 }
 
