@@ -3,6 +3,7 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import NotFound from './pages/404/NotFound'
 import AccountVerification from './pages/Auth/AccountVerification'
 import Auth from './pages/Auth/Auth'
+import Boards from './pages/Boards'
 import Board from './pages/Boards/_id'
 import Settings from './pages/Settings/Settings'
 import { selectCurrentUser } from './redux/user/userSlice'
@@ -25,6 +26,7 @@ function App() {
       />
 
       <Route element={<ProtectedRoute user={currentUser} />}>
+        <Route path="/boards" element={<Boards />} />
         <Route path="/boards/:boardId" element={<Board />} />
         <Route path="/settings/account" element={<Settings />} />
         <Route path="/settings/security" element={<Settings />} />
