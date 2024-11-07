@@ -8,6 +8,12 @@ export const listUserBoardsAPI = async (query) => {
   return response.data
 }
 
+export const createNewBoardAPI = async (data) => {
+  const response = await axiosInstance.post(`${API_ROOT}/v1/boards`, data)
+  toast.success('Board created successfully')
+  return response.data
+}
+
 export const updateBoardDetailsAPI = async (boardId, updateData) => {
   const response = await axiosInstance.patch(
     `${API_ROOT}/v1/boards/${boardId}`,
@@ -20,14 +26,6 @@ export const moveCardToDifferentColumnAPI = async (updateData) => {
   const response = await axiosInstance.patch(
     `${API_ROOT}/v1/boards/supports/moving_card`,
     updateData
-  )
-  return response.data
-}
-
-export const createNewBoardAPI = async (newBoardsData) => {
-  const response = await axiosInstance.post(
-    `${API_ROOT}/v1/boards`,
-    newBoardsData
   )
   return response.data
 }

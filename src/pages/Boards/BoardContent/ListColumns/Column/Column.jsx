@@ -1,7 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import AddCardIcon from '@mui/icons-material/AddCard'
-import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import Cloud from '@mui/icons-material/Cloud'
 import ContentCopy from '@mui/icons-material/ContentCopy'
@@ -19,7 +18,6 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import { cloneDeep } from 'lodash'
 import { useConfirm } from 'material-ui-confirm'
 import { useState } from 'react'
@@ -30,38 +28,12 @@ import {
   deleteColumnDetailsAPI,
   updateColumnDetailsAPI
 } from '~/apis'
+import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import {
   selectCurrentActiveBoard,
   updateCurrentActiveBoard
 } from '~/redux/activeBoard/activeBoardSlice'
 import ListCards from './ListCards/ListCards'
-
-const INPUT_STYLES = {
-  '& label': { color: 'text.primary' },
-  '& input': {
-    color: (theme) => theme.palette.primary.main,
-    bgcolor: (theme) => {
-      theme.palette.mode === 'dark' ? '#333643' : 'white'
-    }
-  },
-  '& label.Mui-focused': {
-    color: (theme) => theme.palette.primary.main
-  },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: (theme) => theme.palette.primary.main
-    },
-    '&:hover fieldset': {
-      borderColor: (theme) => theme.palette.primary.main
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: (theme) => theme.palette.primary.main
-    }
-  },
-  '& .MuiOutlinedInput-input': {
-    borderRadius: 1
-  }
-}
 
 function Column({ column }) {
   const dispatch = useDispatch()
@@ -134,40 +106,6 @@ function Column({ column }) {
     setNewCardTitle('')
   }
 
-  const [openColumnTitleForm, setOpenColumnTitleForm] = useState(false)
-  const toggleOpenColumnTitleForm = () =>
-    setOpenColumnTitleForm(!openColumnTitleForm)
-  const [newUpdateColumnTitle, setNewUpdateColumnTitle] = useState(column.title)
-  const updateNewColumnTitle = async () => {
-    if (!newUpdateColumnTitle) {
-      toast.error('Please enter a title for this column!')
-      return
-    }
-
-    // Nếu title mới trùng với title cũ thì không làm gì cả
-    if (newUpdateColumnTitle === column.title) {
-      toggleOpenColumnTitleForm()
-      return
-    }
-
-    const columnId = column._id
-    const newBoard = cloneDeep(board)
-    const columnToUpdate = newBoard.columns.find(
-      (column) => column._id === columnId
-    )
-    if (columnToUpdate) {
-      columnToUpdate.title = newUpdateColumnTitle
-    }
-    dispatch(updateCurrentActiveBoard(newBoard))
-
-    // Gọi API xử lý phía BE
-    await updateColumnDetailsAPI(columnId, { title: newUpdateColumnTitle })
-
-    // Đóng trạng thái thêm Card mới & Clear Input
-    toggleOpenColumnTitleForm()
-    setNewUpdateColumnTitle(newUpdateColumnTitle)
-  }
-
   // Xử lý xóa một Column và Cards bên trong nó
   const confirmDeleteColumn = useConfirm()
   const handleDeleteColumn = () => {
@@ -194,6 +132,15 @@ function Column({ column }) {
       .catch(() => {})
   }
 
+  const onUpdateColumnTitle = (newTitle) => {
+    updateColumnDetailsAPI(column._id, { title: newTitle }).then(() => {
+      const newBoard = cloneDeep(board)
+      const columnToUpdate = newBoard.columns.find((c) => c._id === column._id)
+      if (columnToUpdate) columnToUpdate.title = newTitle
+      dispatch(updateCurrentActiveBoard(newBoard))
+    })
+  }
+
   return (
     <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes}>
       <Box
@@ -217,159 +164,103 @@ function Column({ column }) {
             p: 2
           }}
         >
-          {!openColumnTitleForm ? (
-            <Box
-              sx={{
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Typography
-                variant="h6"
-                onClick={toggleOpenColumnTitleForm}
-                sx={{
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer'
+          <Box
+            sx={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <ToggleFocusInput
+              data-no-dnd="true"
+              value={column?.title}
+              onChangedValue={onUpdateColumnTitle}
+            />
+            <Box>
+              <Tooltip title="More options">
+                <ExpandMoreIcon
+                  sx={{ color: 'text.primary', cursor: 'pointer' }}
+                  id="basic-column-dropdown"
+                  aria-controls={open ? 'basic-menu-column' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
+                />
+              </Tooltip>
+              <Menu
+                id="basic-menu-column"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                onClick={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-column-dropdown'
                 }}
               >
-                {column?.title}
-              </Typography>
-              <Box>
-                <Tooltip title="More options">
-                  <ExpandMoreIcon
-                    sx={{ color: 'text.primary', cursor: 'pointer' }}
-                    id="basic-column-dropdown"
-                    aria-controls={open ? 'basic-menu-column' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleClick}
-                  />
-                </Tooltip>
-                <Menu
-                  id="basic-menu-column"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  onClick={handleClose}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-column-dropdown'
-                  }}
-                >
-                  <MenuItem
-                    onClick={toggleOpenNewCardForm}
-                    sx={{
-                      '&:hover': {
-                        color: 'success.light',
-                        '& .add-card-icon': {
-                          color: 'success.light'
-                        }
-                      }
-                    }}
-                  >
-                    <ListItemIcon>
-                      <AddCardIcon fontSize="small" className="add-card-icon" />
-                    </ListItemIcon>
-                    <ListItemText>Add a card</ListItemText>
-                  </MenuItem>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <ContentCut fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Cut</ListItemText>
-                  </MenuItem>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <ContentCopy fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Copy</ListItemText>
-                  </MenuItem>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <ContentPaste fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Paste</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem
-                    onClick={handleDeleteColumn}
-                    sx={{
-                      '&:hover': {
-                        color: 'warning.dark',
-                        '& .delete-forever-icon': {
-                          color: 'warning.dark'
-                        }
-                      }
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DeleteForeverIcon
-                        fontSize="small"
-                        className="delete-forever-icon"
-                      />
-                    </ListItemIcon>
-                    <ListItemText>Delete this column</ListItemText>
-                  </MenuItem>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <Cloud fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Archive this column</ListItemText>
-                  </MenuItem>
-                </Menu>
-              </Box>
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1
-              }}
-            >
-              <TextField
-                label="Enter column title..."
-                type="text"
-                size="small"
-                variant="outlined"
-                autoFocus
-                data-no-dnd="true"
-                value={newUpdateColumnTitle}
-                onChange={(e) => setNewUpdateColumnTitle(e.target.value)}
-                sx={INPUT_STYLES}
-              />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Button
-                  data-no-dnd="true"
-                  className="interceptor-loading"
-                  onClick={updateNewColumnTitle}
-                  variant="contained"
-                  color="success"
-                  size="small"
+                <MenuItem
+                  onClick={toggleOpenNewCardForm}
                   sx={{
-                    boxShadow: 'none',
                     '&:hover': {
-                      bgcolor: (theme) => theme.palette.success.main
+                      color: 'success.light',
+                      '& .add-card-icon': {
+                        color: 'success.light'
+                      }
                     }
                   }}
                 >
-                  <CheckIcon fontSize="small" />
-                </Button>
-                <CloseIcon
-                  data-no-dnd="true"
-                  onClick={toggleOpenColumnTitleForm}
-                  fontSize="small"
+                  <ListItemIcon>
+                    <AddCardIcon fontSize="small" className="add-card-icon" />
+                  </ListItemIcon>
+                  <ListItemText>Add a card</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <ContentCut fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Cut</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <ContentCopy fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Copy</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <ContentPaste fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Paste</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem
+                  onClick={handleDeleteColumn}
                   sx={{
-                    color: (theme) => theme.palette.warning.light,
-                    cursor: 'pointer'
+                    '&:hover': {
+                      color: 'warning.dark',
+                      '& .delete-forever-icon': {
+                        color: 'warning.dark'
+                      }
+                    }
                   }}
-                />
-              </Box>
+                >
+                  <ListItemIcon>
+                    <DeleteForeverIcon
+                      fontSize="small"
+                      className="delete-forever-icon"
+                    />
+                  </ListItemIcon>
+                  <ListItemText>Delete this column</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <Cloud fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Archive this column</ListItemText>
+                </MenuItem>
+              </Menu>
             </Box>
-          )}
+          </Box>
         </Box>
 
         {/* Box Columns List Cards*/}
@@ -419,7 +310,32 @@ function Column({ column }) {
                 data-no-dnd="true"
                 value={newCardTitle}
                 onChange={(e) => setNewCardTitle(e.target.value)}
-                sx={INPUT_STYLES}
+                sx={{
+                  '& label': { color: 'text.primary' },
+                  '& input': {
+                    color: (theme) => theme.palette.primary.main,
+                    bgcolor: (theme) => {
+                      theme.palette.mode === 'dark' ? '#333643' : 'white'
+                    }
+                  },
+                  '& label.Mui-focused': {
+                    color: (theme) => theme.palette.primary.main
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    },
+                    '&:hover fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    }
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    borderRadius: 1
+                  }
+                }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
