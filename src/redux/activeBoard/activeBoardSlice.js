@@ -23,11 +23,28 @@ export const activeBoardSlice = createSlice({
   reducers: {
     updateCurrentActiveBoard: (state, action) => {
       state.currentActiveBoard = action.payload
+    },
+    updateCardInBoard: (state, action) => {
+      const incomingCard = action.payload
+      const column = state.currentActiveBoard.columns.find(
+        (c) => c._id === incomingCard.columnId
+      )
+      if (column) {
+        const card = column.cards.find((c) => c._id === incomingCard._id)
+        if (card) {
+          // card.title = incomingCard.title
+          Object.keys(incomingCard).forEach((key) => {
+            card[key] = incomingCard[key]
+          })
+        }
+      }
     }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBoardDetailsAPI.fulfilled, (state, action) => {
       let board = action.payload
+
+      board.FE_all_users = board.owners.concat(board.members)
 
       // Sắp xếp thứ tự các Columns ở đây trước khi đưa dữ liệu xuống bên dưới các components con
       board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
@@ -49,7 +66,8 @@ export const activeBoardSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { updateCurrentActiveBoard } = activeBoardSlice.actions
+export const { updateCurrentActiveBoard, updateCardInBoard } =
+  activeBoardSlice.actions
 
 // Selectors
 export const selectCurrentActiveBoard = (state) => {

@@ -10,17 +10,20 @@ import {
 } from '~/apis'
 import AppBar from '~/components/AppBar/AppBar'
 import Loading from '~/components/Loading/Loading'
+import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 import {
   fetchBoardDetailsAPI,
   selectCurrentActiveBoard,
   updateCurrentActiveBoard
 } from '~/redux/activeBoard/activeBoardSlice'
+import { selectCurrentActiveCard } from '~/redux/activeCard/activeCardSlide'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 
 function Board() {
   const dispatch = useDispatch()
   const board = useSelector(selectCurrentActiveBoard)
+  const activeCard = useSelector(selectCurrentActiveCard)
   const { boardId } = useParams()
 
   useEffect(() => {
@@ -104,6 +107,7 @@ function Board() {
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
+      {activeCard && <ActiveCard />}
       <AppBar />
       <BoardBar board={board} />
       <BoardContent

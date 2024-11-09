@@ -4,13 +4,12 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
-import Avatar from '@mui/material/Avatar'
-import AvatarGroup from '@mui/material/AvatarGroup'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Tooltip from '@mui/material/Tooltip'
 import { capitalizeFirstLetter } from '~/utils/formatters'
+import BoardUserGroup from './BoardUserGroup'
 
 const MENU_STYLES = {
   color: 'white',
@@ -26,7 +25,7 @@ const MENU_STYLES = {
   }
 }
 
-function BoardBar({ board, members }) {
+function BoardBar({ board }) {
   return (
     <Box
       sx={{
@@ -91,29 +90,7 @@ function BoardBar({ board, members }) {
         >
           Invite
         </Button>
-        <AvatarGroup
-          max={7}
-          sx={{
-            gap: '10px',
-            '& .MuiAvatar-root': {
-              height: 32,
-              width: 32,
-              fontSize: 16,
-              border: 'none',
-              color: 'white',
-              cursor: 'pointer',
-              '&:first-of-type': {
-                bgcolor: '#a4b0be'
-              }
-            }
-          }}
-        >
-          {members?.map((member) => (
-            <Tooltip key={member._id} title={member.displayName}>
-              <Avatar alt={member.displayName} src={member.avatar} />
-            </Tooltip>
-          ))}
-        </AvatarGroup>
+        <BoardUserGroup boardUsers={board?.FE_all_users} />
       </Box>
     </Box>
   )
