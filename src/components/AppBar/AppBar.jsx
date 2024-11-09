@@ -2,9 +2,7 @@ import AppsIcon from '@mui/icons-material/Apps'
 import CloseIcon from '@mui/icons-material/Close'
 import HelpOutline from '@mui/icons-material/HelpOutline'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import NotificationsNone from '@mui/icons-material/NotificationsNone'
 import SearchIcon from '@mui/icons-material/Search'
-import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -16,6 +14,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
 import ModeSelect from '~/components/ModeSelect/ModeSelect'
+import Notifications from '~/pages/Boards/Notifications/Notifications'
 import Profiles from './Menus/Profiles'
 import Recent from './Menus/Recent'
 import Starred from './Menus/Starred'
@@ -133,11 +132,7 @@ function AppBar() {
 
         <ModeSelect />
 
-        <Tooltip title="Notifications">
-          <Badge color="warning" variant="dot" sx={{ cursor: 'pointer' }}>
-            <NotificationsNone sx={{ color: 'white' }} />
-          </Badge>
-        </Tooltip>
+        <Notifications />
 
         <Tooltip title="Help">
           <HelpOutline sx={{ cursor: 'pointer', color: 'white' }} />

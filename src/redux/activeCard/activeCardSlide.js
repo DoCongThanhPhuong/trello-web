@@ -1,14 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  currentActiveCard: null
+  currentActiveCard: null,
+  isShowCardModal: false
 }
 
 export const activeCardSlice = createSlice({
   name: 'activeCard',
   initialState,
   reducers: {
-    clearCurrentActiveCard: (state) => {
+    showCardModal: (state) => {
+      state.isShowCardModal = true
+    },
+
+    clearAndHideCurrentActiveCard: (state) => {
+      state.isShowCardModal = false
       state.currentActiveCard = null
     },
 
@@ -20,11 +26,18 @@ export const activeCardSlice = createSlice({
   extraReducers: (builder) => {}
 })
 
-export const { clearCurrentActiveCard, updateCurrentActiveCard } =
-  activeCardSlice.actions
+export const {
+  showCardModal,
+  clearAndHideCurrentActiveCard,
+  updateCurrentActiveCard
+} = activeCardSlice.actions
 
 export const selectCurrentActiveCard = (state) => {
   return state.activeCard.currentActiveCard
+}
+
+export const selectIsShowCardModal = (state) => {
+  return state.activeCard.isShowCardModal
 }
 
 export const activeCardReducer = activeCardSlice.reducer

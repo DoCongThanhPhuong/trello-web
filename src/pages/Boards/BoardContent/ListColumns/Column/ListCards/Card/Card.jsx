@@ -10,7 +10,10 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import { useDispatch } from 'react-redux'
-import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlide'
+import {
+  showCardModal,
+  updateCurrentActiveCard
+} from '~/redux/activeCard/activeCardSlide'
 
 function Card({ card }) {
   const dispatch = useDispatch()
@@ -41,6 +44,7 @@ function Card({ card }) {
 
   const setActiveCard = () => {
     dispatch(updateCurrentActiveCard(card))
+    dispatch(showCardModal())
   }
 
   return (
