@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { inviteUserToBoardAPI } from '~/apis'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { socketIoInstance } from '~/socketClient'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
@@ -36,9 +37,11 @@ function InviteBoardUser({ boardId }) {
   } = useForm()
   const submitInviteUserToBoard = (data) => {
     const { inviteeEmail } = data
-    inviteUserToBoardAPI({ inviteeEmail, boardId }).then(() => {
+    inviteUserToBoardAPI({ inviteeEmail, boardId }).then((invitation) => {
       setValue('inviteeEmail', null)
       setAnchorPopoverElement(null)
+
+      socketIoInstance.emit('FE_USER_INVITED_TO_BOARD', invitation)
     })
   }
 
