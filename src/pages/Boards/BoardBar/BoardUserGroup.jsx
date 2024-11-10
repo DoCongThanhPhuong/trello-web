@@ -24,10 +24,10 @@ function BoardUserGroup({ boardUsers = [], limit = 8 }) {
       {boardUsers.map((user, index) => {
         if (index < limit) {
           return (
-            <Tooltip title={user?.displayName} key={index}>
+            <Tooltip title={user?.email} key={index}>
               <Avatar
                 sx={{ width: 34, height: 34, cursor: 'pointer' }}
-                alt="avatar"
+                alt={user?.displayName}
                 src={user?.avatar}
               />
             </Tooltip>
@@ -78,10 +78,10 @@ function BoardUserGroup({ boardUsers = [], limit = 8 }) {
           }}
         >
           {boardUsers.map((user, index) => (
-            <Tooltip title={user?.displayName} key={index}>
+            <Tooltip title={user?.email} key={index}>
               <Avatar
                 sx={{ width: 34, height: 34, cursor: 'pointer' }}
-                alt="avatar"
+                alt={user?.displayName}
                 src={user?.avatar}
               />
             </Tooltip>

@@ -53,7 +53,7 @@ function Profiles() {
         >
           <Avatar
             sx={{ width: 36, height: 36 }}
-            alt="avatar"
+            alt={currentUser?.displayName}
             src={currentUser?.avatar}
           />
         </IconButton>
@@ -76,7 +76,7 @@ function Profiles() {
           >
             <Avatar
               sx={{ width: '28px', height: '28px', mr: 2 }}
-              alt="avatar"
+              alt={currentUser?.displayName}
               src={currentUser?.avatar}
             />
             Profile

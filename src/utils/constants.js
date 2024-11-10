@@ -10,3 +10,8 @@ if (process.env.BUILD_MODE === 'production') {
 export const API_ROOT = apiRoot
 
 export const DEFAULT_PAGE_SIZE = 12
+
+export const CARD_MEMBERS_ACTION = {
+  REMOVE: 'REMOVE',
+  ADD: 'ADD'
+}

@@ -33,7 +33,7 @@ function CardActivitySection({ cardComments = [], onAddCardComment }) {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <Avatar
           sx={{ width: 36, height: 36, cursor: 'pointer' }}
-          alt="avatar"
+          alt={currentUser?.displayName}
           src={currentUser?.avatar}
         />
         <TextField
@@ -67,7 +67,7 @@ function CardActivitySection({ cardComments = [], onAddCardComment }) {
           <Tooltip title={comment?.userEmail}>
             <Avatar
               sx={{ width: 36, height: 36, cursor: 'pointer' }}
-              alt="avatar"
+              alt={comment?.userDisplayName}
               src={comment?.userAvatar}
             />
           </Tooltip>
